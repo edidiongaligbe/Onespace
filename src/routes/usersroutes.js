@@ -1,3 +1,4 @@
+const {ensureAuthenticated} = require('../utils/auth');
 module.exports = function (app) {
   
     const user = require("../controllers/userController.js");
@@ -9,6 +10,23 @@ module.exports = function (app) {
     
     // Create a new user
     app.post("/register", user.create);
+
+    app.post('/login', user.login);
+
+    app.get('/dashboard', ensureAuthenticated, (req, res) =>{
+      res.render('pages/dashboard');
+    });
+
+    //Members
+    app.get('/member', ensureAuthenticated,(req, res) =>{
+      res.render('pages/member');
+    });
+
+    //app.post('/member', user.addMember);
+
+    app.get('/members', ensureAuthenticated,(req, res) =>{
+      res.render('pages/member');
+    });
   
     /* // Retrieve all book
     app.get("/api/books", book.findAll);

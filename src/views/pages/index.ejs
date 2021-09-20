@@ -5,44 +5,47 @@
   <%- include('../partials/head'); %>
 </head>
 
-<body class="container" id="index_body">
-  <%- include('../partials/big_logo'); %>
-
+<body id="index_body">
   
-    <div class="form">
-      <div class="form-toggle"></div>
-      <div class="form-panel one">
-        <div class="form-header">
-          <h1>Account Login</h1>
+  <div class="wrapper">
+    
+      <%- include('../partials/big_logo'); %>
+    
+    <div class="container" style="display: flex; justify-content: center; align-items: center;">
+      <div class="jumbotron reg_form" style="padding-top: 15px;">
+        <div class="form"> 
+          <div class="form-header">
+            <h1>Account Login</h1>
+            <% if(typeof errors !== "undefined") { %>
+              <%    errors.forEach(function(error){ %>
+              <p style="color: red;"> <%= error.msg %></p>
+              <%    })        %>
+              <% } %>
+          </div>
+          <div class="form-content">
+            <form method="POST" action="/login">
+              <div class="form-group reg_form-group"><label for="username">Username</label><input type="text" id="username"
+                  name="username" required="required" /></div>
+              <div class="form-group reg_form-group"><label for="password">Password</label><input type="password" id="password"
+                  name="password" required="required" /></div>
+             <br>
+              <div class="form-group reg_form-group"><button type="submit">Log In</button></div>
+              <br>
+              <div class="form-group reg_form-group">
+                <a class="form-recovery" href="/register" style="display: none;">Create Account</a>
+                <a class="form-recovery" href="#">Forgot Password?</a>
+              </div>
+            </form>
+          </div>
+         
+        
         </div>
-        <div class="form-content">
-          <form>
-            <div class="form-group"><label for="username">Username</label><input type="text" id="username"
-                name="username" required="required" /></div>
-            <div class="form-group"><label for="password">Password</label><input type="password" id="password"
-                name="password" required="required" /></div>
-           <br>
-            <div class="form-group"><button type="submit">Log In</button></div>
-            <br>
-            <div class="form-group">
-              <a class="form-recovery" href="/register">Create Account</a>
-              <a class="form-recovery" href="#">Forgot Password?</a>
-            </div>
-          </form>
-        </div>
-      </div>
-      <div class="form-panel two">
 
+        
       </div>
     </div>
 
-
-
-
-
-
-
-
+  </div>
 
 </body>
 

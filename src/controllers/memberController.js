@@ -1,37 +1,16 @@
-const passport = require('passport');
-const bcrypt = require("bcrypt");
 const db = require("../utils/database");
-const User = db.user;
+const Member = db.member;
 
-exports.create = (req, res) => {
-  //register user
-
-  const { code, username, password, cpassword } = req.body;
+exports.addMember = (req, res) => {
+    const { code, username, password, cpassword } = req.body;
 
   let errors = [];
 
-  console.log(
-    " code: " +
-      code +
-      ", username :" +
-      username +
-      ", pass:" +
-      password +
-      ", pass2:" +
-      cpassword
-  );
+ 
 
   //Validations
   if (!code || !username || !password || !cpassword) {
     errors.push({ msg: "Please fill in all fields" });
-  }
-  
-  if (password !== cpassword) {
-    errors.push({ msg: "Passwords dont match" });
-  }
-
-  if (password.length < 6) {
-    errors.push({ msg: "Password atleast 6 characters" });
   }
 
   if (errors.length > 0) {
@@ -93,25 +72,5 @@ exports.create = (req, res) => {
       });
     });
   }
-
-};
-
-exports.login = (req, res, next) =>{
-  //login user
-
-  passport.authenticate('local',{
-    successRedirect : '/dashboard',
-    failureRedirect : '/',
-    badRequestMessage: 'Incorrect login details',
-    failureFlash : true,
-    })(req,res,next);
-};
-
-
-
-exports.get = ('/logout',(req,res)=>{
-  //logout user
-  req.logout();
-  req.flash('success_msg','Now logged out');
-  res.redirect('/'); 
-  })
+  
+}
