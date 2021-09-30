@@ -45,6 +45,8 @@ db.sequelize.sync().then(() => {
 //Routes
 require("./src/routes/indexroutes")(app);
 require("./src/routes/usersroutes")(app);
+require("./src/routes/memberroutes")(app);
+require("./src/routes/organizationStructureroutes")(app);
 
 //look for ways to handle errors
 
