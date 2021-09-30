@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <%- include('../partials/head'); %>
+
+</head>
+
+<body>
+
+    <div class="wrapper">
+        <%- include('../partials/sidebar'); %>
+            <div class="main-panel">
+                <nav class="navbar navbar-default navbar-fixed">
+                    <div class="container-fluid">
+                        <div class="navbar-header">
+                            <%- include('../partials/hidden_button'); %>
+                                <a class="navbar-brand" href="#">Minstry</a>
+                        </div>
+                        <div class="collapse navbar-collapse">
+                            <%- include('../partials/logout'); %>
+                        </div>
+                    </div>
+                </nav>
+
+                <div class="content">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="card">
+                                    <div class="header">
+                                        <h4 class="title">Add Ministry</h4>
+                                        <% if(typeof errors !=="undefined" ) { %>
+                                            <% errors.forEach(function(error){ %>
+                                              <p style="color: red;">
+                                                <%= error.msg %>
+                                              </p>
+                                            <% }) %>
+                                        <% } %>
+                                    </div>
+                                    <div class="content">
+                                        <form action="/addministry" method="POST" >
+                                            <div class="row">
+
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label>Name</label>
+                                                        <input type="text" class="form-control" name="ministryname"
+                                                            required="required">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label>Head</label>
+                                                        <input list="headlist" class="form-control" name="head"
+                                                            required="required" autocomplete="off">
+                                                        <datalist id="headlist">
+                                                            <% if(typeof people !=="undefined" ) { %>
+                                                                <% people.forEach((person)=>{ %>
+                                                                    <option>
+                                                                        <%= person.Person %>
+                                                                    </option>
+                                                                    <% }); %>
+                                                                        <% } %>
+                                                        </datalist>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label>Assistant</label>
+                                                        <input list="assistantlist" class="form-control"
+                                                            name="assistant" autocomplete="off">
+                                                        <datalist id="assistantlist">
+                                                            <% if(typeof people !=="undefined" ) { %>
+                                                                <% people.forEach((person)=>{ %>
+                                                                    <option>
+                                                                        <%= person.Person %>
+                                                                    </option>
+                                                                    <% }); %>
+                                                                        <% } %>
+                                                        </datalist>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <label>Comment</label>
+                                                        <textarea rows="4" class="form-control" name="comment"
+                                                            required="required"></textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <button type="submit" class="btn btn-info btn-fill pull-right">Save</button>
+                                            <div class="clearfix"></div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+    </div>
+    <script>
+        $(document).ready(function () {
+            $.ajax({
+                    type: 'get',
+                    url: '/ajaxpeople',
+                    dataType: 'json'
+                })
+                    .done(function (response) {
+                    // console.log(response);                    
+                    $.each(response.peopleData,(key, value) =>{
+                        $("#headlist").append($("<option>").attr('value', value.Person));
+                        $("#assistantlist").append($("<option>").attr('value', value.Person));
+                    });
+                });
+        });
+    </script>
+
+    <%- include('../partials/other_libs'); %>
+
+</body>
+
+</html>

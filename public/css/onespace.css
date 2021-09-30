@@ -150,10 +150,76 @@
     text-transform: uppercase;
 }
 
-
 .cp-fab {
     background: #fff !important;
     color: #4285f4 !important;
+}
+
+.add-button{
+    color: #fff;
+    background-color: #4285f4;
+    border-color: #4285f4;
+    border-radius: 2px;
+    box-shadow: none;
+    float: right;
+    vertical-align: middle;
+    background-position: 50% 50%;
+    margin: 1em 1.5em;
+    font-weight: 500;
+    line-height: 1.28571428em;
+    padding: 8px 14px;
+    overflow: visible;
+    text-align: center;
+    align-items: center;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.alert-success {
+    color: #3c763d;
+    background-color: #dff0d8;
+    border: 1px solid #d6e9c6;;
+}
+
+.table-bordered>thead>tr>th{
+    border-bottom-width: 0px !important;
+    border-top-width: 0px !important;
+}
+
+.table.dataTable.display{
+    font-family:"Nunito Sans",sans-serif !important;
+}
+
+table.dataTable.display tbody td {
+     border-top:0px !important;
+     border-left-width: 0;
+     border-right-width: 1px;
+     border-style: solid;
+}
+
+table.dataTable tbody {
+    font-weight: 100 !important;
+    padding-top: 1rem;
+    padding-right: 1.2rem;
+    padding-bottom: 1rem;
+    padding-left: 1rem;
+}
+
+
+
+td::first-letter{
+    text-transform: capitalize;
+}
+
+td img{
+    max-height: 30px;
+    max-width: 30px;
+}
+
+@media (max-width: 767px){
+    .add-button-text{
+    display:none;
+    }
 }
 
 

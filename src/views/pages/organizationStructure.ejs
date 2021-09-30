@@ -11,12 +11,10 @@
         <nav class="navbar navbar-default navbar-fixed">
             <div class="container-fluid">
                 <div class="navbar-header">
-                    <%- include('../partials/hidden_button'); %>
-                    <a class="navbar-brand" href="#">Dashboard</a>
+                    <a class="navbar-brand" href="#">Ministries</a>
                 </div>
                 <div class="collapse navbar-collapse">
                     <%- include('../partials/hidden_search'); %>
-
                     <%- include('../partials/logout'); %>
                 </div>
             </div>
@@ -30,12 +28,30 @@
                         <div class="card">
 
                             <div class="header">
-                                <h4 class="title">Quick Summary</h4>
+                                <h4 class="title">Ministries</h4>
                                 <p class="category"></p>
+                                <div class="row">
+                                    <div class="col-md-8">
+                                       <!--  <% if(typeof success !=="undefined" ) { %>
+                                            <div class="alert alert-success" role="alert">
+                                                <p>Successful!</p>
+                                            </div>
+                                            <% } %>
+-->
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div>
+                                            <a class="add-button" href="/addministry">
+                                                <span class="glyphicon glyphicon-plus"
+                                                    style="font-weight:800; padding-right: 0.4em;"> </span>
+                                                <span class="add-button-text">Add ministry</span>
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                </div>
                             </div>
                             <div class="content">
-                                <div id="chartPreferences" class="ct-chart ct-perfect-fourth"></div>
-
                                 <div class="footer">
                                     
                                     <hr>
