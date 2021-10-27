@@ -7,8 +7,12 @@ module.exports = (sequelize, Sequelize) =>{
           allowNull: false,
           primaryKey: true,
           defaultValue: Sequelize.UUIDV4,
+<<<<<<< Updated upstream
         }, 
           
+=======
+        },       
+>>>>>>> Stashed changes
         comment: {
             type: Sequelize.STRING(250),
           },

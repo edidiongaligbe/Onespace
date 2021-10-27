@@ -8,7 +8,11 @@ module.exports = function (app) {
 
     app.get('/ministries',  organization.getAllMinistries);  
 
+<<<<<<< Updated upstream
     app.get('/addministry',  (req, res)=>{
+=======
+    app.get('/addministry',   (req, res)=>{
+>>>>>>> Stashed changes
       res.render('pages/addministry');
     });  
 

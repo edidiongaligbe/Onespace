@@ -3,13 +3,15 @@
 module.exports = function (app) {
   
     const user = require("../controllers/user.controller.js");
-  
+
+    app.post("/register", user.register); 
 
     app.post('/login', user.login);
 
     app.get("/logout", user.logout);
     
     app.get('/register', (req, res) =>{
+<<<<<<< Updated upstream
       res.render('pages/register');
     });    
     
@@ -17,19 +19,12 @@ module.exports = function (app) {
 
     app.get('/dashboard', (req, res) =>{
       res.render('pages/dashboard');
+=======
+      // res.render('pages/register');
+>>>>>>> Stashed changes
     });
 
-   
-  
-    /* // Retrieve all book
-    app.get("/api/books", book.findAll);
-  
-    // Retrieve a single book by Id
-    app.get("/api/books/:bookId", book.findByPk);
-  
-    // Update a book with Id
-    app.put("/api/books/:bookId", book.update);
-  
-    // Delete a book with Id
-    app.delete("/api/books/:bookId", book.delete); */
+    app.get('/dashboard', (req, res) =>{
+      //res.render('pages/dashboard');
+    });
   };
