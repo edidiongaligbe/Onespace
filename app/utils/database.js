@@ -19,10 +19,6 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
 //Models
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
 db.member = require('../models/member.model.js')(sequelize, Sequelize );
 db.ministry = require('../models/ministry.model.js')(sequelize, Sequelize);
 db.department = require('../models/department.model.js')(sequelize, Sequelize);
@@ -32,11 +28,7 @@ db.user = require('../models/user.model.js')(sequelize, Sequelize );
 db.role = require('../models/role.model.js')(sequelize, Sequelize);
 db.userRole = require('../models/userRole.model.js')(sequelize, Sequelize);
 
-<<<<<<< Updated upstream
 //Member and User relationship
-=======
-//Memberand User relationship
->>>>>>> Stashed changes
 db.member.hasMany(db.user, {foreignKey: 'member_id', sourceKey: 'member_id'});
 
 //Member and Ministry relationship

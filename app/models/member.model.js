@@ -64,14 +64,8 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.STRING(150),
       allowNull: true
   } 
-<<<<<<< Updated upstream
     },
      );
-=======
-    }, );
-
-   
->>>>>>> Stashed changes
   
     return Member;
   };

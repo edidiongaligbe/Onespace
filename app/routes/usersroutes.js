@@ -11,7 +11,6 @@ module.exports = function (app) {
     app.get("/logout", user.logout);
     
     app.get('/register', (req, res) =>{
-<<<<<<< Updated upstream
       res.render('pages/register');
     });    
     
@@ -19,9 +18,6 @@ module.exports = function (app) {
 
     app.get('/dashboard', (req, res) =>{
       res.render('pages/dashboard');
-=======
-      // res.render('pages/register');
->>>>>>> Stashed changes
     });
 
     app.get('/dashboard', (req, res) =>{

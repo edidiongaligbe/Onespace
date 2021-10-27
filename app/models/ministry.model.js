@@ -9,11 +9,7 @@ module.exports = (sequelize, Sequelize) =>{
         },
         ministry_name: {
           type: Sequelize.STRING(25),
-<<<<<<< Updated upstream
         },
-=======
-        },    
->>>>>>> Stashed changes
         comment: {
             type: Sequelize.STRING(250),
           },
