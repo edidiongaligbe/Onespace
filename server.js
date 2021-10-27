@@ -1,38 +1,57 @@
-require('dotenv').config();
+const flash = require('connect-flash');
+const passport = require('passport');
 const express = require("express");
-const cors = require('cors');
-
+const session = require('express-session');
 const app = new express();
 
-var corsOptions = {
-  origin: 'http://localhost:3000'
-};
 
-app.use(cors(corsOptions));
-//app.use(express.json);
-//app.use(express.urlencoded({ extended: true }));
+//passport config:
+require('./src/utils/passport')(passport)
+
+//ejs
+app.set("views", "./src/views");
+app.set("view engine", "ejs");
+//app.use(expressEjsLayout);
+
+//Sets up the Express app to handle data parsing
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.static(__dirname + "/public"));
+//express session
+app.use(session({
+  secret : 'secret',
+  resave : true,
+  saveUninitialized : true
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(flash());
+app.use((req,res,next)=> {
+    res.locals.success = req.flash('success');
+    res.locals.error = req.flash('error');
+    next();
+    })
 
 
-const db = require("./app/utils/database");
-db.sequelize.sync({ force: true }).then(() => {
+
+
+
+const db = require("./src/utils/database");
+db.sequelize.sync().then(() => {
   console.log('"Drop and Resync with { force: true }"');
 });
 
 //Routes
-require("./app/routes/indexroutes")(app);
-require("./app/routes/usersroutes")(app);
-require("./app/routes/memberroutes")(app);
-require("./app/routes/organizationStructureroutes")(app);
+require("./src/routes/indexroutes")(app);
+require("./src/routes/usersroutes")(app);
+require("./src/routes/memberroutes")(app);
+require("./src/routes/organizationStructureroutes")(app);
 
-
-/* app.get("/", (req, res) => {
-  res.json({ message: "Welcome to bezkoder application." });
-}); */
-
-//look for ways to handle global  errors
+//look for ways to handle errors
 
 port = process.env.PORT || 3000;
-app.listen(port, () => {
+var server = app.listen(port, () => {
   console.log(`App listening on http://localhost:${port}`);
 });
 
