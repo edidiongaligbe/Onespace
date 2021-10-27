@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
 const sequelize = new Sequelize(
-    'onespace', 'root', 'app@12345', {
-        dialect: 'mysql', host:'localhost', pool:{
+    process.env.DB, process.env.DB_USER, process.env.DB_PWD, {
+        dialect: 'mysql', host:process.env.DB_HOST, pool:{
             max: 5,
             min: 0,
             acquire:30000,
