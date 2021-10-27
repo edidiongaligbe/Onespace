@@ -1,21 +1,21 @@
-const {ensureAuthenticated} = require('../utils/auth');
+
 module.exports = function (app) {
   
     const organization = require("../controllers/organizationStructure.controller.js");
   
-    app.get('/ajaxpeople', ensureAuthenticated, organization.loadPeople);
+    app.get('/ajaxpeople',  organization.loadPeople);
 
 
-    app.get('/ministries', ensureAuthenticated, organization.getAllMinistries);  
+    app.get('/ministries',  organization.getAllMinistries);  
 
-    app.get('/addministry',  ensureAuthenticated, (req, res)=>{
+    app.get('/addministry',  (req, res)=>{
       res.render('pages/addministry');
     });  
 
-    app.post('/addministry',  ensureAuthenticated, organization.addMinistry);
+    app.post('/addministry',   organization.addMinistry);
 
 
-    app.get('/departments/:id',  ensureAuthenticated, (req, res)=>{
+    app.get('/departments/:id',   (req, res)=>{
       res.render('pages/departments');
     });
   

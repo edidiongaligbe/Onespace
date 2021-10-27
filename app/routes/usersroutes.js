@@ -1,4 +1,4 @@
-const {ensureAuthenticated} = require('../utils/auth');
+
 
 module.exports = function (app) {
   
@@ -13,9 +13,9 @@ module.exports = function (app) {
       res.render('pages/register');
     });    
     
-    app.post("/register", user.create);    
+    app.post("/register", user.register);    
 
-    app.get('/dashboard', ensureAuthenticated, (req, res) =>{
+    app.get('/dashboard', (req, res) =>{
       res.render('pages/dashboard');
     });
 

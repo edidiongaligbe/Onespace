@@ -1,10 +1,11 @@
 
 module.exports = (sequelize, Sequelize) => {
-    const Member = sequelize.define("members", {
+    const Member = sequelize.define("Members", {
       member_id: {
-        type: Sequelize.INTEGER,
-        autoIncrement: true,
+        type: Sequelize.UUID,
+        allowNull: false,
         primaryKey: true,
+        defaultValue: Sequelize.UUIDV4,
       }, 
       firstname: {
         type: Sequelize.STRING(25),
@@ -62,7 +63,8 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.STRING(150),
       allowNull: true
   } 
-    }, );
+    },
+     );
   
     return Member;
   };
