@@ -1,19 +1,22 @@
 require('dotenv').config();
 const express = require("express");
-
 const cors = require('cors');
-
+const PORT = process.env.PORT || 3001;
 const app = new express();
 
+app.use(express.json());
+app.use(express.urlencoded());
 var corsOptions = {
-  origin: 'http://localhost:3000'
+  origin: '*'
 };
-
 app.use(cors(corsOptions));
 
+
 const db = require("./app/utils/database");
-db.sequelize.sync({ force: true }).then(() => {
+const dbinit = require("./devrole");
+db.sequelize.sync().then(() => {
   console.log('"Drop and Resync with { force: true }"');
+  dbinit.createDev();
 });
 
 require("./app/routes/indexroutes")(app);
@@ -21,9 +24,7 @@ require("./app/routes/usersroutes")(app);
 require("./app/routes/memberroutes")(app);
 require("./app/routes/organizationStructureroutes")(app);
 
-//look for ways to handle global  errors
 
-port = process.env.PORT || 3000;
-app.listen(port, () => {
-  console.log(`App listening on http://localhost:${port}`);
+app.listen(PORT, () => {
+  console.log(`App listening on http://localhost:${PORT}`);
 });

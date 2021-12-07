@@ -1,107 +1,99 @@
-
 const bcrypt = require("bcrypt");
+const { userRole } = require("../utils/database");
 const db = require("../utils/database");
-const User = db.user;
-const Member = db.member;
 
-exports.register = async (req, res) => {
+
+
+exports.signup = async (req, res) => {
   /* REGISTER USER */
+  try{
 
-  const { code, username, password, cpassword } = req.body;
+    const { code, username, password, cpassword } = req.body;
+  
+    /* -------------VALIDATIONS----------------  */
+  
+    if (!code || !username || !password || !cpassword) {
+      res.status(400).send({
+        message: "Please fill in all fields.",
+      });
+      return;
+    }
+  
+    if (password !== cpassword) {
+      res.status(400).send({
+        message: "Check your password and confirm again.",
+      });
+      return;
+    }
+  
+    if (password.length < 6) {
+      res.status(400).send({
+        message: "Password must be atleast 6 characters.",
+      });
+      return;
+    }
+  
+    //Make sure the username is not in use
+    const user_name = await db.user.findOne({ where: { username: username } });
+    if (user_name) {
+      console.log(user_name);
+      res.status(400).send({
+        message: "Username already taken, please use another one.",
+      });
+      return;
+    }
+  
+    //Check login code
+    
+    const getCode = await db.member.findOne({ where: { login_code: code.trim() } });
+    if (!getCode) {
+      res.status(400).send({
+        message: "Invalid code.",
+      });
+      return;
+    } 
 
-  let errors = [];
+    /* -------------VALIDATION PASSED----------------  */
 
-  console.log(
-    " code: " +
-      code +
-      ", username :" +
-      username +
-      ", pass:" +
-      password +
-      ", pass2:" +
-      cpassword
-  );
+   /* 1. Save user to database.
+      2. Delete signup code value that belongs to the user in the members table.
+      UPDATE - No need to create the user roles table for this app. the roles will be stored in 'roles' column in the
+      members table. when there is a need for it, pull the record out and put them in an array then work with it.
+      
+  */
+   db.user
+     .create({
+       username: username,
+       password: bcrypt.hashSync(password, 10),
+       member_id: getCode.member_id,
+     })
+     .then((newUser) => {
+       db.member.update(
+         { login_code: "" },
+         { where: { member_id: newUser.member_id } }
+       );
+       res.status(200).send({ message: "User created successfully" });
+     })
+     .catch((error) => {
+       console.log(error);
+       res.status(500).send({
+         message:
+           "An error occured while creating your account. Contact the Administrator.",
+       });
+     });
 
-  //Validations
-  if (!code || !username || !password || !cpassword) {
-    res.status(400).send({
-      message: "Please fill in all fields",
-      message: "Please fill in all fields"
+  } catch(error){
+    console.log(err);
+      res.status(500).send({
+        message:
+          "An error occured while creating your account. Contact the Administrator.",
     });
-    return;
   }
-
-  if (password !== cpassword) {
-    res.status(400).send({
-      message: "Passwords dont match.",
-      message: "Passwords dont match."
-    });
-    return;
-  }
-
-  if (password.length < 6) {
-    res.status(400).send({
-      message: "Password atleast 6 characters.",
-    });
-    return;
-  }
-
-  /* Validation passed  */
-
-  //Make sure the username is not in use
-  User.findOne({ where: { username: username } })
-    .then((user) => {
-      if (user) {
-        res.status(400).send({
-          message: "Username already taken, please use another one.",
-        });
-        return;
-      }
-    })
-    .catch((err) => {
-      res.render("pages/error500");
-    });
-
-  //Check login code
-  Member.findOne({ where: { login_code: code.trim() } })
-    .then((user) => {
-      if (!user) {
-        res.status(400).send({
-          message: "Invalid code.",
-        });
-        return;
-      } else {
-        //Save user to database
-        bcrypt.hash(password, 10, (err, hash) => {
-          console.log(hash);
-          const user = {
-            username: username,
-            password: hash,
-            member_id: user.member_id,
-          };
-
-          const newUser = User.build(user);
-
-          newUser
-            .save()
-            .then((data) => {
-              console.log('"User created successfully"');
-              res.redirect(301, "/dashboard");
-            })
-            .catch((err) => {
-              res.status(500).send({ message: err });
-            });
-        });
-      }
-    })
-    .catch((err) => {
-      console.log(err);
-      res.render("pages/error500");
-    });
+ 
 };
 
-exports.login = (req, res, next) => {
-  User.findOne({
+exports.signin = (req, res, next) => {
+  db.user.findOne({
     where: {
       username: req.body.username,
     },
@@ -123,7 +115,7 @@ exports.login = (req, res, next) => {
         });
       }
 
-      var token = jwt.sign({ id: user.id }, config.secret, {
+      var token = jwt.sign({ id: member_id }, config.secret, {
         expiresIn: 86400, // 24 hours
       });
 
@@ -141,36 +133,25 @@ exports.login = (req, res, next) => {
       });
     })
     .catch((err) => {
-      res.status(500).send({ message: err.message });
+      console.log(err);
+      res.status(500).send({
+        message: "An error occured while logging you in. Contact the Admin.",
+      });
     });
 };
 
-exports.logout =
-  ("/logout",
-  (req, res) => {
-    //logout user
-    req.session.destroy((err) => {
-      res.clearCookie("connect.sid");
-      res.clearCookie("_gid");
-      res.clearCookie("_ga");
-      req.logOut();
-      req.user = null;
-      res.redirect("/");
-    });
+exports.logout = ("/logout", (req, res) => {
+    res.json({message: "twas nice having you around!!!!!!!!"})
   });
 
 exports.allAccess = (req, res) => {
   res.status(200).send("Public Content.");
 };
 
-exports.userBoard = (req, res) => {
-  res.status(200).send("User Content.");
+exports.seniorPastorBoard = (req, res) => {
+  res.status(200).send("Senior Pastor Content.");
 };
 
 exports.adminBoard = (req, res) => {
   res.status(200).send("Admin Content.");
-};
-
-exports.moderatorBoard = (req, res) => {
-  res.status(200).send("Moderator Content.");
 };

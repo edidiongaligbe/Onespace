@@ -1,7 +1,6 @@
 var fs = require('fs');
 const { QueryTypes } = require("sequelize");
 const db = require("../utils/database");
-const Member = db.member;
 
 exports.addMember = async(req, res) => {
 
@@ -41,11 +40,13 @@ exports.addMember = async(req, res) => {
         address: req.body.address,
         occupation: req.body.occupation,
         membertype: req.body.membertype,
-        passport: imagePath
+        passport: imagePath,
+        loginCode: ' ',
+        tempRoleHolder: ' '
       }
 
       
-      const newMember = Member.build(member);
+      const newMember = db.member.build(member);
       newMember.save()
           .then((data) => {
             var imgPath = data.passport;
@@ -88,7 +89,7 @@ exports.getAllMembers = async(req, res) =>{
 exports.getAMember = async(req, res) => {
   try{
     const memberID = req.params.memberId;
-    Member.findByPk(memberID).then((memberData) => {
+    db.member.findByPk(memberID).then((memberData) => {
       console.log(memberData)
       res.render('pages/memberProfile', {member: memberData})
   }).finally(() => {

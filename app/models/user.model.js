@@ -9,10 +9,10 @@ module.exports = (sequelize, Sequelize) => {
       primaryKey: true,
       defaultValue: Sequelize.UUIDV4,
     },
-    username: {
+    Username: {
       type: Sequelize.STRING(25),
     },
-    password: {
+    Password: {
       type: Sequelize.STRING(225),
     },
    
