@@ -6,6 +6,7 @@ exports.addMember = async(req, res) => {
 
   let errors = [];
   let success = [];
+  console.log(req.body);
 
   if (errors.length > 0) {
     res.render('pages/member',{
@@ -19,7 +20,7 @@ exports.addMember = async(req, res) => {
       console.log(req.file);
 
       if(req.file == undefined){
-        return res.send('You must select a file');
+        return res.send('You must select a profile picture for the new member.');
       }
 
       var imageData = fs.readFileSync(`./public/img/uploads/${req.body.firstname}-${req.body.lastname}-${req.file.originalname}` );
@@ -30,19 +31,19 @@ exports.addMember = async(req, res) => {
       const member = {
         firstname: req.body.firstname,
         middlename: req.body.middlename,
-        lastname: req.body.lastname,
+        lastname: req.body.middlename,
         title: req.body.title,
         gender: req.body.gender,
         maritalstatus: req.body.maritalstatus,
-        dob: req.body.dob,
+        dob: req.body.birthday,
         phone: req.body.phone,
         email: req.body.email,
         address: req.body.address,
         occupation: req.body.occupation,
         membertype: req.body.membertype,
         passport: imagePath,
-        loginCode: ' ',
-        tempRoleHolder: ' '
+        login_code: ' ',
+        member_roles: ' '
       }
 
       

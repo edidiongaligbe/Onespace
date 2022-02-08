@@ -1,5 +1,5 @@
 const bcrypt = require("bcrypt");
-const { userRole } = require("../utils/database");
+const { generateToken } = require("../utils/authJwt");
 const db = require("../utils/database");
 
 
@@ -8,6 +8,7 @@ exports.signup = async (req, res) => {
   /* REGISTER USER */
   try{
 
+    let assignedRoles = [];
     const { code, username, password, cpassword } = req.body;
   
     /* -------------VALIDATIONS----------------  */
@@ -43,10 +44,11 @@ exports.signup = async (req, res) => {
       return;
     }
   
-    //Check login code
-    
-    const getCode = await db.member.findOne({ where: { login_code: code.trim() } });
-    if (!getCode) {
+    //Check login code authenticity
+    const getMemberDetails = await db.member.findOne({
+      where: { login_code: code.trim() },
+    });
+    if (!getMemberDetails) {
       res.status(400).send({
         message: "Invalid code.",
       });
@@ -55,26 +57,25 @@ exports.signup = async (req, res) => {
 
     /* -------------VALIDATION PASSED----------------  */
 
-   /* 1. Save user to database.
-      2. Delete signup code value that belongs to the user in the members table.
-      UPDATE - No need to create the user roles table for this app. the roles will be stored in 'roles' column in the
-      members table. when there is a need for it, pull the record out and put them in an array then work with it.
-      
-  */
+ /* ----1. Save user to database.--------*/
+ 
+ console.log(assignedRoles)
    db.user
      .create({
        username: username,
        password: bcrypt.hashSync(password, 10),
-       member_id: getCode.member_id,
+       member_id: getMemberDetails.member_id
      })
      .then((newUser) => {
+       // delete signup code and assigned roles from the member table
        db.member.update(
          { login_code: "" },
          { where: { member_id: newUser.member_id } }
        );
+       
        res.status(200).send({ message: "User created successfully" });
      })
-     .catch((error) => {
+   .catch((error) => {
        console.log(error);
        res.status(500).send({
          message:
@@ -83,7 +84,7 @@ exports.signup = async (req, res) => {
      });
 
   } catch(error){
-    console.log(err);
+    console.log(error);
       res.status(500).send({
         message:
           "An error occured while creating your account. Contact the Administrator.",
@@ -92,52 +93,68 @@ exports.signup = async (req, res) => {
  
 };
 
-exports.signin = (req, res, next) => {
-  db.user.findOne({
-    where: {
-      username: req.body.username,
-    },
-  })
-    .then((user) => {
-      if (!user) {
-        return res.status(404).send({ message: "User Not found." });
-      }
+exports.signin =  async(req, res, next) => {
 
-      var passwordIsValid = bcrypt.compareSync(
-        req.body.password,
-        user.password
-      );
+  var authorities = [];
+  var firstname, lastname = undefined;
+  var token = undefined;
+  var randNo = Math.floor(Math.random() * 8) + 1;
 
-      if (!passwordIsValid) {
-        return res.status(401).send({
-          accessToken: null,
-          message: "Invalid Password!",
+  db.user.findOne({ where: { username: req.body.username } })
+  .then((result) =>{
+    if(!result){
+    return res.status(404).send({ message: "Incorrect username or password." });
+    }
+    
+    var passwordIsValid = bcrypt.compareSync(
+      req.body.password,
+      result.password
+    );
+
+    if (!passwordIsValid) {
+        return res.status(401).send({message: "Incorrect username or password.", });
+    }
+
+    token = generateToken(result.member_id);
+
+    db.sequelize.query(`SELECT name FROM roles WHERE role_id IN (SELECT role_id FROM assigned_roles WHERE member_id = '${result.member_id}')`,{ type: db.sequelize.QueryTypes.SELECT })
+    .then((roles) => {
+      if (roles) {
+        roles.forEach((item) => {
+          authorities.push("ROLE_" + item.name.toUpperCase());
         });
       }
-
-      var token = jwt.sign({ id: member_id }, config.secret, {
-        expiresIn: 86400, // 24 hours
-      });
-
-      var authorities = [];
-      User.getRoles().then((roles) => {
-        for (let i = 0; i < roles.length; i++) {
-          authorities.push("ROLE_" + roles[i].name.toUpperCase());
-        }
-        console.log(authorities);
-        res.status(200).send({
-          id: user.id,
-          roles: authorities,
-          accessToken: token,
+      db.sequelize.query(`SELECT firstname, lastname AS NameOfUser FROM members WHERE member_id = '${result.member_id}'`,{type: db.sequelize.QueryTypes.SELECT})
+      .then((name) => {
+        firstname = name[0].firstname;
+        lastname = name[0].lastname;
+        db.sequelize.query(`SELECT * FROM christian_quotes WHERE quote_id = ${randNo}`, {type: db.sequelize.QueryTypes.SELECT,})
+        .then((quoteResult) => {
+          res.status(200).send({
+            roles: authorities,
+            quote: quoteResult[0].quote,
+            author: quoteResult[0].author,
+            firstName: firstname,
+            lastName: lastname,
+            accessToken: token,
+          });
+        })    
+        .catch((error) => {
+            console.log(error);
         });
+      }).catch((error) => {
+        console.log(error);
       });
     })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).send({
-        message: "An error occured while logging you in. Contact the Admin.",
-      });
+    .catch((error) => {
+      console.log(error);
+      res.status(500).send({ message: "An error occured while logging you in. Contact the Admin."});
     });
+  }).catch((error) => {
+    console.log(error);
+    res.status(500).send({ message: "An error occured while logging you in. Contact the Admin."});
+  });
+   
 };
 
 exports.logout = ("/logout", (req, res) => {
@@ -155,3 +172,4 @@ exports.seniorPastorBoard = (req, res) => {
 exports.adminBoard = (req, res) => {
   res.status(200).send("Admin Content.");
 };
+

@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-  const Member = sequelize.define("Members", {
+  const Member = sequelize.define("members", {
     member_id: {
       type: Sequelize.UUID,
       allowNull: false,
@@ -7,38 +7,38 @@ module.exports = (sequelize, Sequelize) => {
       defaultValue: Sequelize.UUIDV4,
     },
     firstname: {
-      type: Sequelize.STRING(25),
+      type: Sequelize.STRING(125),
     },
     middlename: {
-      type: Sequelize.STRING(25),
+      type: Sequelize.STRING(125),
       allowNull: true,
     },
     lastname: {
-      type: Sequelize.STRING(25),
+      type: Sequelize.STRING(125),
       allowNull: true,
     },
     title: {
-      type: Sequelize.STRING(25),
+      type: Sequelize.STRING(125),
       allowNull: true,
     },
     gender: {
-      type: Sequelize.STRING(25),
+      type: Sequelize.STRING(125),
       allowNull: true,
     },
     maritalstatus: {
-      type: Sequelize.STRING(10),
+      type: Sequelize.STRING(125),
       allowNull: true,
     },
     dob: {
-      type: Sequelize.STRING(25),
+      type: Sequelize.STRING(125),
       allowNull: true,
     },
     phone: {
-      type: Sequelize.STRING(25),
+      type: Sequelize.STRING(125),
       allowNull: true,
     },
     email: {
-      type: Sequelize.STRING(25),
+      type: Sequelize.STRING(125),
       allowNull: true,
     },
 
@@ -47,11 +47,11 @@ module.exports = (sequelize, Sequelize) => {
       allowNull: true,
     },
     occupation: {
-      type: Sequelize.STRING(25),
+      type: Sequelize.STRING(125),
       allowNull: true,
     },
     membertype: {
-      type: Sequelize.STRING(20),
+      type: Sequelize.STRING(120),
       allowNull: true,
     },
     passport: {
@@ -61,11 +61,7 @@ module.exports = (sequelize, Sequelize) => {
     login_code: {
       type: Sequelize.STRING(10),
       allowNull: true,
-    },
-    temp_role_holder: {
-      type: Sequelize.STRING(150),
-      allowNull: true,
-    },
+    }
   });
 
   return Member;

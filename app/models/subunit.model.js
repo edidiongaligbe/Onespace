@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) =>{
-    const SubUnit = sequelize.define("SubUnits", {
+    const SubUnit = sequelize.define("sub_units", {
         subUnit_id:{
           type: Sequelize.UUID,
           allowNull: false,

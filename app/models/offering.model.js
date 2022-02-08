@@ -1,17 +1,17 @@
 
 
 module.exports = (sequelize, Sequelize) => {
-    const Offering = sequelize.define("Offerings", {
-      Offering_id:{
+    const Offering = sequelize.define("offerings", {
+      offering_id:{
           type:Sequelize.UUID,
           allowNull: false,
           primaryKey: true,
-          defaultValue: Sequelize.UUID4
+          defaultValue: Sequelize.UUIDV4
       },
-      TotalAmount: {
+      totalAmount: {
           type: Sequelize.STRING(50)
       },
-      Comment: {
+      comment: {
         type: Sequelize.STRING(250)
     }  
     });

@@ -1,7 +1,7 @@
 
 
 module.exports = (sequelize, Sequelize) =>{
-    const Department = sequelize.define("Departments", {
+    const Department = sequelize.define("departments", {
         dept_id:{
           type: Sequelize.UUID,
           allowNull: false,

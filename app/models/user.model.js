@@ -9,13 +9,12 @@ module.exports = (sequelize, Sequelize) => {
       primaryKey: true,
       defaultValue: Sequelize.UUIDV4,
     },
-    Username: {
+    username: {
       type: Sequelize.STRING(25),
     },
-    Password: {
+    password: {
       type: Sequelize.STRING(225),
     },
-   
   }, {
       timestamps: true
   });

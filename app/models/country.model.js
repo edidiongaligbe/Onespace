@@ -1,13 +1,13 @@
 module.exports  = (sequelize, Sequelize) => {
-    const Country = sequelize.define("Country", {
-        Country_id:{
+    const Country = sequelize.define("countries", {
+        country_id:{
             type: Sequelize.UUID,
             allowNull: false,
             primaryKey: true,
-            defaultValue: Sequelize.UUID4
+            defaultValue: Sequelize.UUIDV4
         },
-        CountryName: {
-            type: Sequelize.String(50)
+        country: {
+            type: Sequelize.STRING(50)
         }
     });
     return Country;

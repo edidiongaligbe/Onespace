@@ -67,7 +67,7 @@ exports.bulkInsertCountries = async() => {
 /*Bulk insert countries of the world into the database*/
 try {
     
- // const ngr = await db.country.findOne({ where: { country: 'Nigeria' } });
+ 
  const num = await db.country.count();
   if (!num) {
     var countries = [
@@ -277,3 +277,30 @@ try {
     console.log(error);
   }
 };
+
+exports.bulkInsertChristianQuotes = async() => {
+  /*Bulk insert christian quotes into the database*/
+  try{
+    const quotes = await db.christianQuotes.count();
+  if (!quotes) {
+    var quoteInfo = [
+      {quote_id:1, quote:'The LORD is my strength and my song; he has become my salvation. Glad songs of salvation are in the tents of the righteous: ‘The right hand of the LORD does valiantly, the right hand of the LORD exalts, the right hand of the LORD does valiantly!', author:'~Psalm 118:14-16'},
+      {quote_id:2, quote:'This is my comfort in my affliction, that your promise gives me life',author:'~Psalm 119:50'},
+      {quote_id:3, quote:'Therefore encourage one another and build one another up, just as you are doing.',author:'~1 Thessalonians 5:11'} ,
+      {quote_id:4, quote:'The name of the LORD is a strong tower; the righteous man runs into it and is safe.' ,author:'~Proverbs 18:10: '} ,
+      {quote_id:5, quote:'My home is in heaven. I’m just traveling through this world.',author:'~Billy Graham'} ,
+      {quote_id:6, quote:'This life was not intended to be the place of our perfection, but the preparation for it.' ,author:'~Richard Baxter'},
+      {quote_id:7, quote:'Faith is taking the first step even when you don’t see the whole staircase.' ,author:'~Martin Luther King Jr'} ,
+      {quote_id:8, quote:'Prayer puts God’s work in his hands and keeps it there.' ,author:'~E.M. Bound'}
+      ];
+  
+      db.christianQuotes.bulkCreate(quoteInfo)
+        .then(() => {
+          console.log('Bulk insert for quotes successful!');
+        });
+  }
+
+  }catch(error){
+    console.log(error);
+  }
+}

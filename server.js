@@ -11,12 +11,13 @@ var corsOptions = {
 };
 app.use(cors(corsOptions));
 
-
 const db = require("./app/utils/database");
-const dbinit = require("./devrole");
-db.sequelize.sync().then(() => {
+const dbinit = require("./app/utils/setupDB");
+db.sequelize.sync({ force: true }).then(() => {
   console.log('"Drop and Resync with { force: true }"');
-  dbinit.createDev();
+  dbinit.setupDevUser();
+  dbinit.bulkInsertCountries();
+  dbinit.bulkInsertChristianQuotes();
 });
 
 require("./app/routes/indexroutes")(app);

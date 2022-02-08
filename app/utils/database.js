@@ -27,45 +27,48 @@ db.unit = require('../models/unit.model.js')(sequelize, Sequelize);
 db.subunit = require('../models/subunit.model.js')(sequelize, Sequelize);
 db.user = require('../models/user.model.js')(sequelize, Sequelize );
 db.role = require('../models/role.model.js')(sequelize, Sequelize);
-db.userRole = require('../models/userRole.model.js')(sequelize, Sequelize);
+db.assignedRoles = require('../models/assignedRoles.model.js')(sequelize, Sequelize);
 db.events = require('../models/events.model.js')(sequelize, Sequelize);
 db.detailedAttendance = require('../models/detailedAttendance.model.js')(sequelize, Sequelize);
 db.offering = require('../models/offering.model.js')(sequelize, Sequelize);
 db.houseFellowshipArea = require('../models/houseFellowshipArea.model.js')(sequelize, Sequelize);
+db.country = require('../models/country.model.js')(sequelize, Sequelize);
+db.christianQuotes = require('../models/christianQuotes.model.js')(sequelize, Sequelize);
 
 //Member and User relationship
-db.member.hasMany(db.user, {foreignKey: 'Member_id', sourceKey: 'Member_id'});
+db.member.hasMany(db.user, {foreignKey: 'member_id', sourceKey: 'member_id'});
+
+//Member and User relationship
+db.member.hasMany(db.assignedRoles, {foreignKey: 'member_id', sourceKey: 'member_id'});
 
 //Member and Ministry relationship
-db.ministry.belongsTo(db.member, {foreignKey: 'Ministry_head', targetKey: 'Member_id'})
+db.ministry.belongsTo(db.member, {foreignKey: 'ministry_head', targetKey: 'member_id'})
 
 //Member, Ministry and Department relationship
-db.department.belongsTo(db.member, {foreignKey: 'Dept_head', targetKey: 'Member_id'})
-db.member.hasMany(db.department, {foreignKey: 'Dept_assistant', sourceKey: 'Member_id', allowNull: true});
-db.ministry.hasMany(db.department, {foreignKey: 'Ministry', sourceKey: 'Ministry_id'});
+db.department.belongsTo(db.member, {foreignKey: 'dept_head', targetKey: 'member_id'})
+db.member.hasMany(db.department, {foreignKey: 'dept_assistant', sourceKey: 'member_id', allowNull: true});
+db.ministry.hasMany(db.department, {foreignKey: 'ministry', sourceKey: 'ministry_id'});
 
 //Member, Department and Unit relationship
-db.unit.belongsTo(db.member, {foreignKey: 'Unit_head', targetKey: 'Member_id'})
-db.member.hasMany(db.unit, {foreignKey: 'Unit_assistant', sourceKey: 'Member_id', allowNull: true});
-db.department.hasMany(db.unit, {foreignKey: 'Department', sourceKey: 'Dept_id'});
+db.unit.belongsTo(db.member, {foreignKey: 'unit_head', targetKey: 'member_id'})
+db.member.hasMany(db.unit, {foreignKey: 'unit_assistant', sourceKey: 'member_id', allowNull: true});
+db.department.hasMany(db.unit, {foreignKey: 'department', sourceKey: 'dept_id'});
 
 //Member, Unit and SubUnit relationship
-db.subunit.belongsTo(db.member, {foreignKey: 'SubUnit_head', targetKey: 'Member_id'})
-db.member.hasMany(db.subunit, {foreignKey: 'SubUnit_assistant', sourceKey: 'Member_id', allowNull: true});
-db.unit.hasMany(db.subunit, {foreignKey: 'Unit', sourceKey: 'Unit_id'});
+db.subunit.belongsTo(db.member, {foreignKey: 'subUnit_head', targetKey: 'member_id'})
+db.member.hasMany(db.subunit, {foreignKey: 'subUnit_assistant', sourceKey: 'member_id', allowNull: true});
+db.unit.hasMany(db.subunit, {foreignKey: 'unit_id', sourceKey: 'unit_id'});
 
-//Member, Role and UserRole relationship
-db.user.belongsToMany(db.role, {through: db.userRole, foreignKey: 'User_id'});
-db.role.belongsToMany(db.user, {through: db.userRole, foreignKey: 'Role_id'});
+
 
 //Events and DetailedAttendance relationship
-db.detailedAttendance.belongsTo(db.events, {foreignKey: 'Event', targetKey: 'Event_id'});
+db.detailedAttendance.belongsTo(db.events, {foreignKey: 'event_id', targetKey: 'event_id'});
 
 //Events and Offering relationship
-db.offering.belongsTo(db.events, {foreignKey: 'Event', targetKey: 'Event_id'});
+db.offering.belongsTo(db.events, {foreignKey: 'event_id', targetKey: 'event_id'});
 
 //Member and HouseFellowshipArea relationship
-db.houseFellowshipArea.belongsTo(db.member, {foreignKey: 'Coordinator', targetKey: 'Member_id'});
+db.houseFellowshipArea.belongsTo(db.member, {foreignKey: 'coordinator', targetKey: 'member_id'});
 
 
 

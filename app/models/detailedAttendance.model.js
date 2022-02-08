@@ -1,20 +1,20 @@
 
 
 module.exports = (sequelize, Sequelize) => {
-    const DetailedAttendance = sequelize.define("DetailedAttendance", {
-      Attendance_id:{
+    const DetailedAttendance = sequelize.define("detailed_attendance", {
+      attendance_id:{
           type:Sequelize.UUID,
           allowNull: false,
           primaryKey: true,
-          defaultValue: Sequelize.UUID4
+          defaultValue: Sequelize.UUIDV4
       },
-      Adults: {
+      adults: {
           type: Sequelize.STRING(10)
       },
-      Youth: {
+      youth: {
         type: Sequelize.STRING(10)
       },
-      Children: {
+      children: {
         type: Sequelize.STRING(10)
       }, 
 
