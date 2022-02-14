@@ -6,7 +6,7 @@ module.exports = function (app) {
  const memberController = require('../controllers/member.controller');
 
   //all members
-  app.get('/members', memberController.getAllMembers);
+  app.get('/api/members', memberController.getAllMembers);
  
   //add member
   app.post('/api/addmember', handleImages.single('image'), memberController.addMember);

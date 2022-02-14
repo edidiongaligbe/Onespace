@@ -13,7 +13,7 @@ app.use(cors(corsOptions));
 
 const db = require("./app/utils/database");
 const dbinit = require("./app/utils/setupDB");
-db.sequelize.sync({ force: true }).then(() => {
+db.sequelize.sync().then(() => {
   console.log('"Drop and Resync with { force: true }"');
   dbinit.setupDevUser();
   dbinit.bulkInsertCountries();
