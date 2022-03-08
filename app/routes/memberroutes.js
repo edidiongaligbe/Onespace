@@ -12,6 +12,6 @@ module.exports = function (app) {
   app.post('/api/addmember', handleImages.single('image'), memberController.addMember);
 
   //display a single member
-  app.get("/member/:memberId", memberController.getAMember);
+  app.get("/api/member/:memberID", memberController.getOneMember);
 
 }

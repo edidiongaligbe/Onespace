@@ -58,6 +58,38 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.STRING(150),
       allowNull: true,
     },
+    previousChurchNameAndAddress: {
+      type: Sequelize.STRING(150),
+      allowNull: true,
+    },
+    previousChurchMembershipStatus: {
+      type: Sequelize.STRING(10),
+      allowNull: true,
+    },
+    baptised: {
+      type: Sequelize.STRING(10),
+      allowNull: true,
+    },
+    baptismDate: {
+      type: Sequelize.STRING(150),
+      allowNull: true,
+    },
+    baptismChurch: {
+      type: Sequelize.STRING(150),
+      allowNull: true,
+    },
+    emergencyContactName: {
+      type: Sequelize.STRING(150),
+      allowNull: true,
+    },
+    emergencyContactPhone: {
+      type: Sequelize.STRING(150),
+      allowNull: true,
+    },
+    emergencyContactRelationship: {
+      type: Sequelize.STRING(150),
+      allowNull: true,
+    },
     login_code: {
       type: Sequelize.STRING(10),
       allowNull: true,

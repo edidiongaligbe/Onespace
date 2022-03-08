@@ -1,11 +1,14 @@
 require('dotenv').config();
 const express = require("express");
 const cors = require('cors');
+const path = require("path");
 const PORT = process.env.PORT || 3001;
 const app = new express();
 
 app.use(express.json());
-app.use(express.urlencoded());
+app.use(express.urlencoded()); 
+
+app.use("/images", express.static(path.join("public/img/profilepics")));
 var corsOptions = {
   origin: '*'
 };
@@ -24,6 +27,8 @@ require("./app/routes/indexroutes")(app);
 require("./app/routes/usersroutes")(app);
 require("./app/routes/memberroutes")(app);
 require("./app/routes/organizationStructureroutes")(app);
+
+
 
 
 app.listen(PORT, () => {
