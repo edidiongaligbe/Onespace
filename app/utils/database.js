@@ -32,6 +32,7 @@ db.events = require('../models/events.model.js')(sequelize, Sequelize);
 db.detailedAttendance = require('../models/detailedAttendance.model.js')(sequelize, Sequelize);
 db.offering = require('../models/offering.model.js')(sequelize, Sequelize);
 db.houseFellowshipArea = require('../models/houseFellowshipArea.model.js')(sequelize, Sequelize);
+db.houseFellowshipCenter = require('../models/houseFellowshipCenter.model.js')(sequelize, Sequelize);
 db.country = require('../models/country.model.js')(sequelize, Sequelize);
 db.christianQuotes = require('../models/christianQuotes.model.js')(sequelize, Sequelize);
 
@@ -59,8 +60,6 @@ db.subunit.belongsTo(db.member, {foreignKey: 'subUnit_head', targetKey: 'member_
 db.member.hasMany(db.subunit, {foreignKey: 'subUnit_assistant', sourceKey: 'member_id', allowNull: true});
 db.unit.hasMany(db.subunit, {foreignKey: 'unit_id', sourceKey: 'unit_id'});
 
-
-
 //Events and DetailedAttendance relationship
 db.detailedAttendance.belongsTo(db.events, {foreignKey: 'event_id', targetKey: 'event_id'});
 
@@ -69,6 +68,12 @@ db.offering.belongsTo(db.events, {foreignKey: 'event_id', targetKey: 'event_id'}
 
 //Member and HouseFellowshipArea relationship
 db.houseFellowshipArea.belongsTo(db.member, {foreignKey: 'coordinator', targetKey: 'member_id'});
+
+//Member and HouseFellowshipArea relationship
+db.houseFellowshipCenter.belongsTo(db.member, {foreignKey: 'homecare_pastor', targetKey: 'member_id'});
+
+//HouseFellowshipArea and HouseFellowshipCenter relationship
+db.houseFellowshipCenter.belongsTo(db.houseFellowshipArea, {foreignKey: 'area', targetKey: 'area_id'});
 
 
 

@@ -12,7 +12,7 @@ module.exports = (sequelize, Sequelize) =>{
         },
         comment: {
             type: Sequelize.STRING(250),
-          },
+        },
     });
     return Ministry;
 }

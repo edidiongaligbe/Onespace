@@ -54,7 +54,7 @@ exports.addMember = async(req, res) => {
           //after writing to profilepics folder, delete the original file from the uploads folder 
           fs.unlinkSync(`./public/img/uploads/${req.body.firstname}-${req.body.lastname}-${req.file.originalname}` );
 
-          console.log('"New member added successfully"');
+          console.log('New member added successfully');
           res.status(200).send({message: "New member added to the database successfully" });
         })
         .catch((error) => {
@@ -89,10 +89,10 @@ exports.getOneMember = async(req, res) => {
     console.log(req.params.memberID);
     let memberData = await db.sequelize.query(`SELECT member_id,  title, CONCAT(ifnull(firstname, ''),' ',ifnull(middlename, ''), ' ',ifnull(lastname, '')) AS 'name', gender, maritalstatus,dob, phone, 
     email, gender, address, occupation, membertype, CONCAT('http://localhost:3001/images/',passport) as passportUrl, previousChurchNameAndAddress,previousChurchMembershipStatus, baptised,
-    baptismDate, baptismChurch, emergencyContactName, emergencyContactPhone,  emergencyContactRelationship FROM members where member_id = '${req.params.memberID}' `, {
+    ifnull(baptismDate, ''), baptismChurch, emergencyContactName, emergencyContactPhone,  emergencyContactRelationship FROM members where member_id = '${req.params.memberID}' `, {
       type:QueryTypes.SELECT
     });
-    console.log(memberData);
+    
     res.status(200).send({result: memberData});
   } catch(err){
     console.log(err);
