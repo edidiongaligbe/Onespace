@@ -1,132 +1,186 @@
 const { QueryTypes } = require("sequelize");
 const db = require("../utils/database");
 
-const Ministry = db.ministry;
-const Department = db.department;
-const Unit = db.unit;
-const SubUnit = db.subunit;
 
 
-exports.loadPeople = async(req, res) =>{
+
+//MINISTRY
+exports.getAllMinistries = async(req, res) =>{
     try{
-        let peopleData = await db.sequelize.query("SELECT CONCAT(firstname,' ',middlename, ' ',lastname) AS 'Person' FROM members where firstname != 'dev'", {
+        const data = await db.sequelize.query(`SELECT mn.ministry_id, mn.ministry_name AS 'name',  mn.comment, 
+        CONCAT(IFNULL(mh.firstname, ''),' ',IFNULL(mh.middlename, ''), ' ',IFNULL(mh.lastname, '')) AS 'head', 
+        comment FROM ministries mn JOIN members mh ON (mn.ministry_head = mh.member_id) ORDER BY mn.ministry_name`,
+        {
             type:QueryTypes.SELECT
-        });
-        console.log(peopleData );
-        res.json({peopleData });        
-
-    }catch (error){
-       console.log(error);
-       res.render('pages/error500');
-    }
-
-}
-
-//Ministry
-exports.addMinistry = async(req, res) => {
-    let errors = [];
-    let success = [];
-    const { ministryname, head, assistant, comment } = req.body;
-
-    console.log(ministryname)
-    
-    try{
+        });    
         
-        if (!ministryname ) {
-            errors.push({ msg: "Please fill in the ministry's name." });
-        }
+        res.status(200).send({result:data})
+    } catch(err){
+        console.log(err);
+        res.status(500).send({message: "Unable to retrieve ministries."});
+    }
+ }
 
-        if (!head ) {
-            errors.push({ msg: "Please fill in the ministry's head." });
-        }
+exports.addMinistry = async(req, res) => {
+    try{
+        const { name, head, comment } = req.body;
 
-        if (errors.length > 0) {
-            res.render('pages/addministry',{
-              errors: errors
-            });
-            console.log(errors);
-            return;
+        const headID = await db.sequelize.query(`SELECT member_id FROM members WHERE CONCAT(firstname,' ',middlename, ' ',lastname) = '${head}'`, {
+            type:QueryTypes.SELECT});
 
-        } else{
-            //Pull out head and assistant ids
-           
+        const buildMinistry = await db.ministry.build({
+            ministry_name: name,
+            ministry_head: headID[0].member_id,
+            comment: comment
+        });
 
-            const headID = await db.sequelize.query(`SELECT member_id FROM members WHERE CONCAT(firstname,' ',middlename, ' ',lastname) = '${head}'`, {
-                type:QueryTypes.SELECT});
-
-            
-            const assistantID = await  db.sequelize.query(`SELECT member_id FROM members WHERE CONCAT(firstname,' ',middlename, ' ',lastname) = '${assistant}'`, {
-                    type:QueryTypes.SELECT});
-          
-
-            //insert new ministry
-            await  Ministry.create({
-                ministry_name: ministryname,
-                ministry_head: headID[0].member_id,
-                ministry_assistant: assistantID[0].member_id,
-                comment: comment
-            })
-            .then((data) => {    
-              success.push({ msg: "Successful!" });
-              console.log('"New ministry added successfully"');              
-              res.redirect(301, "/ministries");
-            })
-            .catch((err) => {
-              errors.length = 0;
-              errors.push({ msg: "An error occured while adding a ministry to the database. Kindly contact the administrator." });
-              console.log(err);
-              res.render('pages/error500');
-            });
-        }       
+        const newMinistry = await buildMinistry.save();
+        res.status(200).send({message: "New ministry added to the database successfully."})     
 
     } catch(err){
         console.log(err);
-        errors.length = 0;
-        errors.push({ msg: "An error occured while adding a ministry to the database. Kindly contact the administrator." });
-        res.render('pages/error500');
+        res.status(500).send({ message: "Server error, unable to add new ministry to the database. Kindly try again later."});
     }
 
 }
 
-exports.getAllMinistries = async(req, res) =>{
+exports.updateMinistry = async(req, res) => {
+    try{
+        const {ministry_id, name, head, comment} = req.body
 
-    let ministriesData = await db.sequelize.query(`SELECT mn.ministry_id, mn.ministry_name AS 'name',  mn.comment, CONCAT(IFNULL(mh.firstname, ''),' ',IFNULL(mh.middlename, ''), ' ',IFNULL(mh.lastname, '')) AS 'head', CONCAT(IFNULL(ma.firstname, ''),' ',IFNULL(ma.middlename, ''), ' ',IFNULL(ma.lastname, '')) AS 'assistant' FROM ministries mn JOIN members mh ON (mn.ministry_head = mh.member_id) JOIN members ma ON (mn.ministry_assistant = ma.member_id) ORDER BY mn.ministry_id`, {
-      type:QueryTypes.SELECT
-    });    
-    console.log(ministriesData );
-    res.render('pages/ministries', {ministries: ministriesData})
- }
+        const headID = await db.sequelize.query(`SELECT member_id FROM members WHERE CONCAT(firstname,' ',middlename, ' ',lastname) = '${head}'`, {
+            type:QueryTypes.SELECT});
 
- exports.getAllMinistriesForDept = async(req, res) =>{
+        const updateMinistry = await db.ministry.update(
+            {
+                ministry_name: name,
+                ministry_head: headID[0].member_id,
+                comment: comment
+            },
+            {
+               where: {ministry_id: ministry_id},
+            }
+        );
+        res.status(200).send({message: "Ministry updated succesfully."}) 
 
-    let allMin = await Ministry.findAll({
-        attributes: ['ministry_id','ministry_name']
-      })   
-    console.log(allMin );
-    res.render('pages/ministries', {ministries: allMin})
- }
+    } catch(err){
+        console.log(err);
+        res.status(500).send({message: "Unable to update ministry."});
+    }
+}
 
 exports.deleteMinistry = async(req, res) => {
-    
+    const ID = req.body.ministry_id;
+    try{
+        const deleteMinistry = await db.ministry.destroy({where:{ ministry_id:ID}});
+        res.status(200).send({message: "Ministry deleted succesfully."})
+    } catch(err){
+        console.log(err);
+        res.status(500).send({message: "Unable to delete ministry."});
+    }
 }
 
-exports.updateMinistry = async(req, res) => {
-    
-}
 
 
-//Department
+
+//DEPARTMENT
+exports.getAllDepartments = async(req, res) =>{
+
+    try{
+        const data = await db.sequelize.query(`SELECT dp.dept_id, dp.dept_name AS 'name',
+        CONCAT(IFNULL(dh.firstname, ''),' ',IFNULL(dh.middlename, ''), ' ',IFNULL(dh.lastname, '')) AS 'head', 
+        CONCAT(IFNULL(da.firstname, ''),' ',IFNULL(da.middlename, ''), ' ',IFNULL(da.lastname, '')) AS 'assistant', 
+        IFNULL(mn.ministry_name, '') as 'ministry'
+        FROM departments dp JOIN members dh ON (dp.dept_head = dh.member_id) JOIN members da ON (dp.dept_head = da.member_id) JOIN ministries mn
+        ON (dp.ministry = mn.ministry_id)
+        ORDER BY dp.dept_name, mn.ministry_name`,
+        {
+            type:QueryTypes.SELECT
+        });    
+        
+        res.status(200).send({result:data})
+    } catch(err){
+        console.log(err);
+        res.status(500).send({message: "Unable to retrieve ministries."});
+    }
+ }
+
 exports.addDepartment = async(req, res) => {
+    try{
+        const { name, head, assistant, ministry } = req.body;
+        console.log(req.body);
 
-}
+        const headID = await db.sequelize.query(`SELECT member_id FROM members WHERE CONCAT(firstname,' ',middlename, ' ',lastname) = '${head}'`, {
+            type:QueryTypes.SELECT});
 
-exports.deleteDepartment = async(req, res) => {
-    
+        const assistID = await db.sequelize.query(`SELECT member_id FROM members WHERE CONCAT(firstname,' ',middlename, ' ',lastname) = '${assistant}'`, {
+                type:QueryTypes.SELECT});
+                console.log(assistID);
+        
+        const minID = await db.sequelize.query(`SELECT ministry_id FROM ministries WHERE ministry_name = '${ministry}'`, {
+            type:QueryTypes.SELECT});
+
+        const buildDepartment = await db.department.build({
+            dept_name: name,
+            dept_head: headID[0].member_id,
+            dept_assistant: assistID[0].member_id,
+            ministry: minID[0].ministry_id
+        });
+
+        const newDepartment = await buildDepartment.save();
+        res.status(200).send({message: "New department added to the database successfully."})     
+
+    } catch(err){
+        console.log(err);
+        res.status(500).send({ message: "Server error, unable to add the department to the database. Kindly try again later."});
+    }
 }
 
 exports.updateDepartment = async(req, res) => {
-    
+    try{
+        const { id, name, head, assistant, ministry } = req.body;
+
+        const headID = await db.sequelize.query(`SELECT member_id FROM members WHERE CONCAT(firstname,' ',middlename, ' ',lastname) = '${head}'`, {
+            type:QueryTypes.SELECT});
+
+        const assistID = await db.sequelize.query(`SELECT member_id FROM members WHERE CONCAT(firstname,' ',middlename, ' ',lastname) = '${assistant}'`, {
+                type:QueryTypes.SELECT});
+        
+        const minID = await db.sequelize.query(`SELECT ministry_id FROM ministries WHERE ministry_name = '${ministry}'`, {
+            type:QueryTypes.SELECT});
+            console.log(ministry);
+
+        const updateDepartment = await db.department.update(
+            {
+                dept_name: name,
+                dept_head: headID[0].member_id,
+                dept_assistant: assistID[0].member_id,
+                ministry: minID[0].ministry_id
+            },
+            {
+               where: {dept_id: id},
+            }
+        );
+        res.status(200).send({message: "Department updated succesfully."}) 
+
+    } catch(err){
+        console.log(err);
+        res.status(500).send({message: "Unable to update ministry."});
+    }
 }
+
+exports.deleteDepartment = async(req, res) => {
+    const ID = req.body.id;
+    try{
+        const deleteDepartment = await db.department.destroy({where:{ dept_id:ID}});
+        res.status(200).send({message: "Department deleted succesfully."})
+    } catch(err){
+        console.log(err);
+        res.status(500).send({message: "Unable to delete department."});
+    }
+}
+
+
 
 
 //Unit

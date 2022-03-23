@@ -9,7 +9,7 @@ module.exports = (sequelize, Sequelize) =>{
           defaultValue: Sequelize.UUIDV4,
         }, 
           
-        comment: {
+        dept_name: {
             type: Sequelize.STRING(250),
           },
     });

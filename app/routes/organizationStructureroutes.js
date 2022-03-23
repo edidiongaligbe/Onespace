@@ -2,21 +2,24 @@
 module.exports = function (app) {
   
     const organization = require("../controllers/organizationStructure.controller.js");
-  
-    app.get('/ajaxpeople',  organization.loadPeople);
 
 
-    app.get('/ministries',  organization.getAllMinistries);  
+   //MINISTRY
+    app.get('/api/ministries',  organization.getAllMinistries); 
 
-    app.get('/addministry',  (req, res)=>{
-      res.render('pages/addministry');
-    });  
+    app.post('/api/AddMinistry',   organization.addMinistry);
 
-    app.post('/addministry',   organization.addMinistry);
+    app.post('/api/UpdateMinistry', organization.updateMinistry);
 
+    app.post('/api/DeleteMinistry', organization.deleteMinistry);
 
-    app.get('/departments/:id',   (req, res)=>{
-      res.render('pages/departments');
-    });
+    //DEPARTMENTS
+    app.get('/api/departments',  organization.getAllDepartments);
+
+    app.post('/api/AddDepartment',  organization.addDepartment);
+
+    app.post('/api/UpdateDepartment',  organization.updateDepartment);
+
+    app.post('/api/DeleteDepartment', organization.deleteDepartment);
   
   };

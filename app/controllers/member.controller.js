@@ -44,6 +44,23 @@ exports.addMember = async(req, res) => {
 
     
     const newMember = db.member.build(member);
+    
+
+    /* change save to use await, then use the result from the await to save the file to the folder
+     const saved = await newMember.save();
+    var imgPath = saved.passport;
+    var imgName = imgPath.replace('/img/profilepics/',' ');
+    imgName = imgName.trim();
+
+    fs.writeFileSync(`./public/img/profilepics/${imgName}`, imageData);
+    //after writing to profilepics folder, delete the original file from the uploads folder 
+    fs.unlinkSync(`./public/img/uploads/${req.body.firstname}-${req.body.lastname}-${req.file.originalname}` );
+
+    console.log('New member added successfully');
+    res.status(200).send({message: "New member added to the database successfully." }); 
+    
+    Completely remove the then.catch from the code below*/
+
     newMember.save()
         .then((data) => {
           var imgPath = data.passport;
@@ -55,10 +72,11 @@ exports.addMember = async(req, res) => {
           fs.unlinkSync(`./public/img/uploads/${req.body.firstname}-${req.body.lastname}-${req.file.originalname}` );
 
           console.log('New member added successfully');
-          res.status(200).send({message: "New member added to the database successfully" });
+          res.status(200).send({message: "New member added to the database successfully." });
         })
         .catch((error) => {
           console.log(error);
+          //delete the image from the folder
           res.status(500).send({ message: "Server error, unable to add new member to the database. Kindly try again later."});
           
         });
