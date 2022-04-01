@@ -24,7 +24,7 @@ db.sequelize.sync().then(() => {
 });
 
 require("./app/routes/indexroutes")(app);
-require("./app/routes/usersroutes")(app);
+require("./app/routes/accessroutes")(app);
 require("./app/routes/memberroutes")(app);
 require("./app/routes/organizationStructureroutes")(app);
 

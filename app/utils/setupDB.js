@@ -12,8 +12,7 @@ exports.setupDevUser = () => {
           db.sequelize.transaction(async function (transaction) {
             const role = await db.role.create(
               {
-                name: "Admin",
-                comment: "Administrative Role",
+                name: "Admin"
               },
               { transaction }
             );
@@ -40,7 +39,7 @@ exports.setupDevUser = () => {
 
             await db.assignedRoles.create({
               member_id: member.member_id,
-              role_id: role.role_id
+              roles: "Admin"
             },
             { transaction })
 

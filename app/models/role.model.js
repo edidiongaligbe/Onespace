@@ -9,11 +9,6 @@ module.exports = (sequelize, Sequelize) => {
       name: {
         type: Sequelize.STRING(25),
       },
-      comment: {
-        type: Sequelize.STRING(225),
-        allowNull: false,
-      },
-     
     }, {
         timestamps: true
     });

@@ -75,7 +75,11 @@ db.houseFellowshipCenter.belongsTo(db.member, {foreignKey: 'homecare_pastor', ta
 //HouseFellowshipArea and HouseFellowshipCenter relationship
 db.houseFellowshipCenter.belongsTo(db.houseFellowshipArea, {foreignKey: 'area', targetKey: 'area_id'});
 
+//Member and Ministry relationship
+db.assignedRoles.belongsTo(db.member, {foreignKey: 'member_id', targetKey: 'member_id'})
 
+/* //Member and Ministry relationship
+db.assignedRoles.belongsTo(db.role, {foreignKey: 'role_id', targetKey: 'role_id'}) */
 
 
 module.exports = db;

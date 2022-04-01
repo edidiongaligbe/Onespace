@@ -5,7 +5,7 @@ module.exports = function (app) {
 
 
    //MINISTRY
-    app.get('/api/ministries',  organization.getAllMinistries); 
+    app.get('/api/AllMinistries',  organization.getAllMinistries); 
 
     app.post('/api/AddMinistry',   organization.addMinistry);
 
@@ -22,4 +22,13 @@ module.exports = function (app) {
 
     app.post('/api/DeleteDepartment', organization.deleteDepartment);
   
+
+    //UNITS
+     app.get('/api/AllUnits',  organization.getAllUnits);
+
+     app.post('/api/AddUnit',  organization.addUnit);
+ 
+     app.post('/api/UpdateUnit',  organization.updateUnit);
+ 
+     app.post('/api/DeleteUnit', organization.deleteUnit);
   };

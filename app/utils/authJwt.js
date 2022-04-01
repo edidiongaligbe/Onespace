@@ -6,7 +6,7 @@ exports.generateToken = (member_id) => {
     expiresIn: 86400, // 24 hours
   });
   return token;
-}
+};
 
 exports.verifyToken = (req, res, next) => {
   let token = req.headers["x-access-token"];

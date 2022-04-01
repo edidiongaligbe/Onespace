@@ -8,12 +8,14 @@ module.exports = (sequelize, Sequelize) => {
             primaryKey: true,
             defaultValue: Sequelize.UUIDV4
         },
-        member_id: {
-            type: Sequelize.UUID
+        roles:{
+            type: Sequelize.STRING(250),
+            allowNull: true,
         },
-        role_id: {
-            type: Sequelize.UUID
-        },
+        active:{
+            type: Sequelize.STRING(25),
+            allowNull: true,
+        }
     });
 
    

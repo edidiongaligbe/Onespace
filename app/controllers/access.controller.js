@@ -1,6 +1,8 @@
+const { QueryTypes } = require("sequelize");
 const bcrypt = require("bcrypt");
 const { generateToken } = require("../utils/authJwt");
 const db = require("../utils/database");
+const cf = require("../utils/customFunctions");
 
 
 
@@ -159,17 +161,131 @@ exports.signin =  async(req, res, next) => {
 
 exports.logout = ("/logout", (req, res) => {
     res.json({message: "twas nice having you around!!!!!!!!"})
-  });
+});
 
-exports.allAccess = (req, res) => {
-  res.status(200).send("Public Content.");
+//ROLES
+exports.getAllRoles = async(req, res) => {
+  try{
+    const data = await db.role.findAll();
+    res.status(200).send({result:data})
+    
+  } catch(err){
+      console.log(err);
+      res.status(500).send({message: "Unable to retrieve roles."});
+  }
 };
 
-exports.seniorPastorBoard = (req, res) => {
-  res.status(200).send("Senior Pastor Content.");
-};
+exports.addRole = async(req, res) => {
+  try{
+      const { name } = req.body;
 
-exports.adminBoard = (req, res) => {
-  res.status(200).send("Admin Content.");
-};
+      const buildRole = await db.role.build({
+          name: name,
+      });
+
+      const newRole = await buildRole.save();
+      res.status(200).send({message: "New role added to the database successfully."})     
+
+  } catch(err){
+      console.log(err);
+      res.status(500).send({ message: "Server error, unable to add new role to the database. Kindly try again later."});
+  }
+
+}
+
+exports.updateRole = async(req, res) => {
+  try{
+      const {id, name} = req.body
+
+      const updateRole = await db.role.update(
+          {
+              name: name,
+          },
+          {
+             where: {role_id: id},
+          }
+      );
+      res.status(200).send({message: "Role updated succesfully."}) 
+
+  } catch(err){
+      console.log(err);
+      res.status(500).send({message: "Unable to update role."});
+  }
+}
+
+exports.deleteRole = async(req, res) => {
+  const { user, role} = req.body.id;
+  try{
+      const deleteRole = await db.role.destroy({where:{ role_id:ID}});
+      res.status(200).send({message: "Role deleted succesfully."})
+  } catch(err){
+      console.log(err);
+      res.status(500).send({message: "Unable to delete role."});
+  }
+}
+
+
+//ASSIGN ROLE
+exports.addAssignedRole = async(req, res) => {
+  const { name, role, active } = req.body;
+
+  if (!name || name === '' || role.length === 0) {
+    res.status(401).send("Kindly provide the name of the user and roles assigned to the user.");
+    return;
+  }
+
+
+  try{
+    const memberID = await cf.getMemberID(name);
+
+    //make sure only one instance of the user exists in the assigned roles table
+    var checkUser = await db.assignedRoles.findOne({ where: { member_id: memberID } });
+    console.log("checkUser");
+    console.log(checkUser);
+
+
+    let str = /,/g;
+    let roleToString = role.toString().replace(str, ', ');
+    
+    
+    const buildAssignedRole = await db.assignedRoles.build({
+      roles: roleToString,
+      member_id: memberID,
+      active: active
+    });
+    const newRcd = await buildAssignedRole.save();
+    res.status(200).send({message: "Role(s) assigned succesfully."})
+
+  } catch(err){
+      console.log(err);
+      res.status(500).send({message: "Unable to grant access user."});
+  }
+}
+
+exports.getAllAssignedRoles = async(req, res) => {
+  try{
+    const data = await db.sequelize.query(`SELECT ar.assigned_id,  ar.roles, ar.active, CONCAT('http://localhost:3001/images/',m.passport) as passport, 
+    CONCAT(IFNULL(m.firstname, ''),' ',IFNULL(m.middlename, ''), ' ',IFNULL(m.lastname, '')) AS 'member'
+    FROM assigned_roles ar JOIN members m ON (ar.member_id = m.member_id) ORDER BY 'member'`, {type:QueryTypes.SELECT});
+
+    res.status(200).send({result:data});
+  } catch(err){
+    console.log(err);
+    res.status(500).send({message: "Unable to retrieve ministries."});
+  }
+}
+
+
+/* 
+    CODE FOR LOOPING THROUGH ARRAY TO SAVE IN DATABASE
+    for(const e of role){
+      const assignedRole = db.assignedRoles.build({
+        member_id: memberID,
+        role_id: e      
+      });
+
+      const newRec = await assignedRole.save();
+    } */
+
+
 

@@ -1,6 +1,6 @@
 const { QueryTypes } = require("sequelize");
 const db = require("../utils/database");
-
+const cf = require("../utils/customFunctions");
 
 
 
@@ -24,6 +24,12 @@ exports.getAllMinistries = async(req, res) =>{
 exports.addMinistry = async(req, res) => {
     try{
         const { name, head, comment } = req.body;
+        if (!name || !head) {
+            res.status(400).send({
+              message: "Kindly make sure the Name, Head fields are not empty.",
+            });
+            return;
+        }
 
         const headID = await db.sequelize.query(`SELECT member_id FROM members WHERE CONCAT(firstname,' ',middlename, ' ',lastname) = '${head}'`, {
             type:QueryTypes.SELECT});
@@ -35,6 +41,7 @@ exports.addMinistry = async(req, res) => {
         });
 
         const newMinistry = await buildMinistry.save();
+        console.log(newMinistry);
         res.status(200).send({message: "New ministry added to the database successfully."})     
 
     } catch(err){
@@ -47,6 +54,12 @@ exports.addMinistry = async(req, res) => {
 exports.updateMinistry = async(req, res) => {
     try{
         const {ministry_id, name, head, comment} = req.body
+        if (!name || !head) {
+            res.status(400).send({
+              message: "Kindly make sure the Name, Head fields are not empty.",
+            });
+            return;
+        }
 
         const headID = await db.sequelize.query(`SELECT member_id FROM members WHERE CONCAT(firstname,' ',middlename, ' ',lastname) = '${head}'`, {
             type:QueryTypes.SELECT});
@@ -89,11 +102,11 @@ exports.getAllDepartments = async(req, res) =>{
     try{
         const data = await db.sequelize.query(`SELECT dp.dept_id, dp.dept_name AS 'name',
         CONCAT(IFNULL(dh.firstname, ''),' ',IFNULL(dh.middlename, ''), ' ',IFNULL(dh.lastname, '')) AS 'head', 
-        CONCAT(IFNULL(da.firstname, ''),' ',IFNULL(da.middlename, ''), ' ',IFNULL(da.lastname, '')) AS 'assistant', 
+        IFNULL(CONCAT(IFNULL(da.firstname, ''),' ',IFNULL(da.middlename, ''), ' ',IFNULL(da.lastname, '')), '') AS 'assistant', 
         IFNULL(mn.ministry_name, '') as 'ministry'
-        FROM departments dp JOIN members dh ON (dp.dept_head = dh.member_id) JOIN members da ON (dp.dept_head = da.member_id) JOIN ministries mn
+        FROM departments dp JOIN members dh ON (dp.dept_head = dh.member_id) LEFT OUTER JOIN members da ON (dp.dept_assistant = da.member_id) JOIN ministries mn
         ON (dp.ministry = mn.ministry_id)
-        ORDER BY dp.dept_name, mn.ministry_name`,
+        ORDER BY dp.dept_name, 'ministry';`,
         {
             type:QueryTypes.SELECT
         });    
@@ -108,14 +121,19 @@ exports.getAllDepartments = async(req, res) =>{
 exports.addDepartment = async(req, res) => {
     try{
         const { name, head, assistant, ministry } = req.body;
-        console.log(req.body);
+
+        if (!name || !head || !ministry) {
+            res.status(400).send({
+              message: "Kindly make sure the Name, Head and Ministry fields are not empty.",
+            });
+            return;
+        }
+        
 
         const headID = await db.sequelize.query(`SELECT member_id FROM members WHERE CONCAT(firstname,' ',middlename, ' ',lastname) = '${head}'`, {
             type:QueryTypes.SELECT});
-
-        const assistID = await db.sequelize.query(`SELECT member_id FROM members WHERE CONCAT(firstname,' ',middlename, ' ',lastname) = '${assistant}'`, {
-                type:QueryTypes.SELECT});
-                console.log(assistID);
+        
+        const assistID = await cf.getMemberID(assistant);
         
         const minID = await db.sequelize.query(`SELECT ministry_id FROM ministries WHERE ministry_name = '${ministry}'`, {
             type:QueryTypes.SELECT});
@@ -123,7 +141,7 @@ exports.addDepartment = async(req, res) => {
         const buildDepartment = await db.department.build({
             dept_name: name,
             dept_head: headID[0].member_id,
-            dept_assistant: assistID[0].member_id,
+            dept_assistant: assistID,
             ministry: minID[0].ministry_id
         });
 
@@ -139,12 +157,17 @@ exports.addDepartment = async(req, res) => {
 exports.updateDepartment = async(req, res) => {
     try{
         const { id, name, head, assistant, ministry } = req.body;
+        if (!name || !head || !ministry) {
+            res.status(400).send({
+              message: "Kindly make sure the Name, Head and Ministry fields are not empty.",
+            });
+            return;
+        }
 
         const headID = await db.sequelize.query(`SELECT member_id FROM members WHERE CONCAT(firstname,' ',middlename, ' ',lastname) = '${head}'`, {
             type:QueryTypes.SELECT});
 
-        const assistID = await db.sequelize.query(`SELECT member_id FROM members WHERE CONCAT(firstname,' ',middlename, ' ',lastname) = '${assistant}'`, {
-                type:QueryTypes.SELECT});
+        const assistID = await cf.getMemberID(assistant);
         
         const minID = await db.sequelize.query(`SELECT ministry_id FROM ministries WHERE ministry_name = '${ministry}'`, {
             type:QueryTypes.SELECT});
@@ -154,7 +177,7 @@ exports.updateDepartment = async(req, res) => {
             {
                 dept_name: name,
                 dept_head: headID[0].member_id,
-                dept_assistant: assistID[0].member_id,
+                dept_assistant: assistID,
                 ministry: minID[0].ministry_id
             },
             {
@@ -183,29 +206,122 @@ exports.deleteDepartment = async(req, res) => {
 
 
 
-//Unit
+//UNIT
+exports.getAllUnits = async(req, res) =>{
+
+    try{
+        const data = await db.sequelize.query(`SELECT un.unit_id, un.unit_name AS 'name',
+        CONCAT(IFNULL(uh.firstname, ''),' ',IFNULL(uh.middlename, ''), ' ',IFNULL(uh.lastname, '')) AS 'head', 
+        IFNULL(CONCAT(IFNULL(ua.firstname, ''),' ',IFNULL(ua.middlename, ''), ' ',IFNULL(ua.lastname, '')), '') AS 'assistant', 
+        IFNULL(dp.dept_name, '') as 'department', IFNULL(mn.ministry_name, '') as 'ministry'
+        FROM units un JOIN members uh ON (un.unit_head = uh.member_id) LEFT OUTER JOIN members ua ON (un.unit_assistant = ua.member_id) JOIN departments dp
+        ON (un.department = dp.dept_id) JOIN ministries mn ON (dp.ministry = mn.ministry_id)
+        ORDER BY un.unit_name, 'department', 'ministry'`,
+        {
+            type:QueryTypes.SELECT
+        });    
+        
+        res.status(200).send({result:data})
+    } catch(err){
+        console.log(err);
+        res.status(500).send({message: "Unable to retrieve units."});
+    }
+ }
 exports.addUnit = async(req, res) => {
+    try{
+        const { name, head, assistant, department } = req.body;
+        if (!name || !head || !department) {
+            res.status(400).send({
+              message: "Kindly make sure the Name, Head and Department fields are not empty.",
+            });
+            return;
+        }
 
-}
+        const headID = await db.sequelize.query(`SELECT member_id FROM members WHERE CONCAT(firstname,' ',middlename, ' ',lastname) = '${head}'`, {
+            type:QueryTypes.SELECT});
 
-exports.deleteUnit = async(req, res) => {
-    
+        const assistID = await cf.getMemberID(assistant);
+        
+        const deptID = await db.sequelize.query(`SELECT dept_id FROM departments WHERE dept_name = '${department}'`, {
+            type:QueryTypes.SELECT});
+
+        const buildUnit = await db.unit.build({
+            unit_name: name,
+            unit_head: headID[0].member_id,
+            unit_assistant: assistID,
+            department: deptID[0].dept_id
+        });
+
+        const newUnit = await buildUnit.save();
+        res.status(200).send({message: "New unit added to the database successfully."})     
+
+    } catch(err){
+        console.log(err);
+        res.status(500).send({ message: "Server error, unable to add the unit to the database. Kindly try again later."});
+    }
 }
 
 exports.updateUnit = async(req, res) => {
-    
+    try{
+        const { id, name, head, assistant, department } = req.body;
+        if (!name || !head || !department) {
+            res.status(400).send({
+              message: "Kindly make sure the Name, Head and Department fields are not empty.",
+            });
+            return;
+        }
+
+        const headID = await db.sequelize.query(`SELECT member_id FROM members WHERE CONCAT(firstname,' ',middlename, ' ',lastname) = '${head}'`, {
+            type:QueryTypes.SELECT});
+
+        const assistID = await cf.getMemberID(assistant);
+        
+        const deptID = await db.sequelize.query(`SELECT dept_id FROM departments WHERE dept_name = '${department}'`, {
+            type:QueryTypes.SELECT});
+
+        const updateUnit = await db.unit.update(
+            {
+                unit_name: name,
+                unit_head: headID[0].member_id,
+                unit_assistant: assistID,
+                department: deptID[0].dept_id
+            },
+            {
+               where: {unit_id: id},
+            }
+        );
+        res.status(200).send({message: "Unit updated succesfully."}) 
+
+    } catch(err){
+        console.log(err);
+        res.status(500).send({message: "Unable to update unit."});
+    }
 }
 
-
-//SubUnit
-exports.addSubUnit = async(req, res) => {
-
+exports.deleteUnit = async(req, res) => {
+     const ID = req.body.id;
+    try{
+        const deleteUnit = await db.unit.destroy({where:{ unit_id:ID}});
+        res.status(200).send({message: "Unit deleted succesfully."})
+    } catch(err){
+        console.log(err);
+        res.status(500).send({message: "Unable to delete Unit."});
+    } 
 }
 
-exports.deleteSubUnit = async(req, res) => {
-    
-}
+/* async function getAssistantId(name){
+    console.log("name: "+ name);
+    if (name === '' || name === undefined || name === '  '){
+        return null;
+    }
 
-exports.updateSubUnit = async(req, res) => {
-    
-}
+    const assistID = await db.sequelize.query(`SELECT member_id FROM members WHERE CONCAT(firstname,' ',middlename, ' ',lastname) = '${name}'`, {
+        type:QueryTypes.SELECT});
+        console.log(assistID);
+
+   return assistID[0].member_id;
+} */
+
+
+
+
