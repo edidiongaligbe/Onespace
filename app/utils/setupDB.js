@@ -31,15 +31,15 @@ exports.setupDevUser = () => {
                 address: " ",
                 occupation: " ",
                 membertype: " ",
-                passport: " ",
-                login_code: "111111"
+                passport: " "
               },
               { transaction }
             );
 
             await db.assignedRoles.create({
               member_id: member.member_id,
-              roles: "Admin"
+              roles: "Admin",
+              active: "true"
             },
             { transaction })
 

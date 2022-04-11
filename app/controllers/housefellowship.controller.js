@@ -18,7 +18,7 @@ exports.addHouseFellowshipArea = async(req, res) => {
 
     } catch(err) {
         console.log(err);
-        res.status(500).send({message: "Unable to save home fellowship area."});
+        res.status(401).send({message: "Unable to save home fellowship area."});
     }
 }
 
@@ -29,7 +29,7 @@ exports.countHouseFellowshipAreas = async(req, res) => {
        res.status(200).send({result: areaCount})
     } catch(err){
         console.log(err);
-        res.status(500).send({message: "Unable to get house fellowship areas."});
+        res.status(401).send({message: "Unable to get house fellowship areas."});
     }
 }
 
@@ -39,7 +39,7 @@ exports.getAllHouseFellowshipCenters = async(req, res) => {
 
     } catch(err){
         console.log(err);
-        res.status(500).send({message: "Unable to get house fellowship centers."});
+        res.status(401).send({message: "Unable to get house fellowship centers."});
     }
 }
 
@@ -51,6 +51,6 @@ exports.countHouseFellowshipCenter = async(req, res) => {
        res.status(200).send({result: centerCount})
     } catch(err){
         console.log(err);
-        res.status(500).send({message: "Unable to get house fellowship centers."});
+        res.status(401).send({message: "Unable to get house fellowship centers."});
     }
 }

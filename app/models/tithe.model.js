@@ -1,8 +1,6 @@
-
-
 module.exports = (sequelize, Sequelize) => {
-    const Offering = sequelize.define("offerings", {
-      offering_id:{
+    const Tithe = sequelize.define("tithes", {
+      tithe_id:{
           type:Sequelize.UUID,
           allowNull: false,
           primaryKey: true,
@@ -16,7 +14,7 @@ module.exports = (sequelize, Sequelize) => {
       },
       comment: {
         type: Sequelize.STRING(250)
-    }  
+      }  
     });
-    return Offering;
+    return Tithe;
 }

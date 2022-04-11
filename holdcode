@@ -10,12 +10,12 @@ exports.signup = async (req, res) => {
   /* REGISTER USER */
   try{
 
-    
-    const { fullname, username, password, cpassword } = req.body;
+    let assignedRoles = [];
+    const { code, username, password, cpassword } = req.body;
   
     /* -------------VALIDATIONS----------------  */
   
-    if (!fullname.trim() || !username || !password || !cpassword) {
+    if (!code || !username || !password || !cpassword) {
       return res.status(401).send("Please fill in all fields.");
     }
   
@@ -35,24 +35,38 @@ exports.signup = async (req, res) => {
       return res.status(401).send("Username already taken, please use another one.");
     }
   
-    //make sure its a member
-    const getMemberDetails = await db.sequelize.query(`SELECT * FROM members WHERE CONCAT(IFNULL(firstname, ''),' ',IFNULL(middlename, ''), ' ',IFNULL(lastname, '')) = '${fullname.trim()}'`, {
-      type:QueryTypes.SELECT});
-
-    if (getMemberDetails.length === 0) {
-     return res.status(401).send("Only members are allowed to sign up.");
+    //Check login code authenticity
+    const getMemberDetails = await db.member.findOne({
+      where: { login_code: code.trim() },
+    });
+    if (!getMemberDetails) {
+     return res.status(401).send("Invalid code.");
     } 
 
     /* -------------VALIDATION PASSED----------------  */
 
-    const newUser = await db.user.create({
-      username: username,
-      password: bcrypt.hashSync(password, 10),
-      member_id: getMemberDetails[0].member_id
-    });
-    res.status(200).send({ message: "User created successfully" });
+ /* ----1. Save user to database.--------*/
  
-  
+ console.log(assignedRoles)
+   db.user
+     .create({
+       username: username,
+       password: bcrypt.hashSync(password, 10),
+       member_id: getMemberDetails.member_id
+     })
+     .then((newUser) => {
+       // delete signup code and assigned roles from the member table
+       db.member.update(
+         { login_code: "" },
+         { where: { member_id: newUser.member_id } }
+       );
+       
+       res.status(200).send({ message: "User created successfully" });
+     })
+   .catch((error) => {
+       console.log(error);
+       res.status(401).send("An error occured while creating your account. Contact the Administrator.");
+     });
 
   } catch(error){
     console.log(error);
@@ -193,6 +207,8 @@ exports.deleteRole = async(req, res) => {
 
 
 //ASSIGN ROLE
+
+
 exports.getAllAssignedRoles = async(req, res) => {
   try{
     const data = await db.sequelize.query(`SELECT ar.assigned_id,  ar.roles, ar.active, CONCAT('http://localhost:3001/images/',m.passport) as passport, 

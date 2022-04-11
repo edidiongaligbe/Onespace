@@ -89,10 +89,6 @@ module.exports = (sequelize, Sequelize) => {
     emergencyContactRelationship: {
       type: Sequelize.STRING(150),
       allowNull: true,
-    },
-    login_code: {
-      type: Sequelize.STRING(10),
-      allowNull: true,
     }
   });
 

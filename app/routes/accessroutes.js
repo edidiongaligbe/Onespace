@@ -21,4 +21,6 @@ module.exports = function (app) {
     app.get('/api/AllAssignedRoles', access.getAllAssignedRoles);
 
     app.post('/api/AddAssignedRole', access.addAssignedRole);
+
+    app.post('/api/DeleteAssignedRole', access.deleteAssignedRole);
   };

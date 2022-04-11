@@ -17,7 +17,7 @@ exports.getAllMinistries = async(req, res) =>{
         res.status(200).send({result:data})
     } catch(err){
         console.log(err);
-        res.status(500).send({message: "Unable to retrieve ministries."});
+        res.status(401).send({message: "Unable to retrieve ministries."});
     }
  }
 
@@ -25,9 +25,7 @@ exports.addMinistry = async(req, res) => {
     try{
         const { name, head, comment } = req.body;
         if (!name || !head) {
-            res.status(400).send({
-              message: "Kindly make sure the Name, Head fields are not empty.",
-            });
+            res.status(401).send("Kindly make sure the Name, Head fields are not empty.");
             return;
         }
 
@@ -46,7 +44,7 @@ exports.addMinistry = async(req, res) => {
 
     } catch(err){
         console.log(err);
-        res.status(500).send({ message: "Server error, unable to add new ministry to the database. Kindly try again later."});
+        res.status(401).send("Unable to add new ministry to the database.");
     }
 
 }
@@ -55,7 +53,7 @@ exports.updateMinistry = async(req, res) => {
     try{
         const {ministry_id, name, head, comment} = req.body
         if (!name || !head) {
-            res.status(400).send({
+            res.status(401).send({
               message: "Kindly make sure the Name, Head fields are not empty.",
             });
             return;
@@ -74,22 +72,21 @@ exports.updateMinistry = async(req, res) => {
                where: {ministry_id: ministry_id},
             }
         );
-        res.status(200).send({message: "Ministry updated succesfully."}) 
+        res.status(200).send({message: "Ministry updated successfully."}) 
 
     } catch(err){
         console.log(err);
-        res.status(500).send({message: "Unable to update ministry."});
+        res.status(401).send({message: "Unable to update ministry."});
     }
 }
 
 exports.deleteMinistry = async(req, res) => {
-    const ID = req.body.ministry_id;
     try{
-        const deleteMinistry = await db.ministry.destroy({where:{ ministry_id:ID}});
-        res.status(200).send({message: "Ministry deleted succesfully."})
+        const deleteMinistry = await db.ministry.destroy({ where: { ministry_id: req.body.ID } });
+        res.status(200).send({message: "Ministry deleted successfully."})
     } catch(err){
         console.log(err);
-        res.status(500).send({message: "Unable to delete ministry."});
+        res.status(401).send("Unable to delete ministry.");
     }
 }
 
@@ -114,7 +111,7 @@ exports.getAllDepartments = async(req, res) =>{
         res.status(200).send({result:data})
     } catch(err){
         console.log(err);
-        res.status(500).send({message: "Unable to retrieve ministries."});
+        res.status(401).send("Unable to retrieve ministries.");
     }
  }
 
@@ -123,9 +120,7 @@ exports.addDepartment = async(req, res) => {
         const { name, head, assistant, ministry } = req.body;
 
         if (!name || !head || !ministry) {
-            res.status(400).send({
-              message: "Kindly make sure the Name, Head and Ministry fields are not empty.",
-            });
+            res.status(401).send("Kindly make sure the Name, Head and Ministry fields are not empty.");
             return;
         }
         
@@ -150,7 +145,7 @@ exports.addDepartment = async(req, res) => {
 
     } catch(err){
         console.log(err);
-        res.status(500).send({ message: "Server error, unable to add the department to the database. Kindly try again later."});
+        res.status(401).send("Server error, unable to add the department to the database. Kindly try again later.");
     }
 }
 
@@ -158,9 +153,7 @@ exports.updateDepartment = async(req, res) => {
     try{
         const { id, name, head, assistant, ministry } = req.body;
         if (!name || !head || !ministry) {
-            res.status(400).send({
-              message: "Kindly make sure the Name, Head and Ministry fields are not empty.",
-            });
+            res.status(401).send("Kindly make sure the Name, Head and Ministry fields are not empty.");
             return;
         }
 
@@ -184,22 +177,21 @@ exports.updateDepartment = async(req, res) => {
                where: {dept_id: id},
             }
         );
-        res.status(200).send({message: "Department updated succesfully."}) 
+        res.status(200).send({message: "Department updated successfully."}) 
 
     } catch(err){
         console.log(err);
-        res.status(500).send({message: "Unable to update ministry."});
+        res.status(401).send("Unable to update ministry.");
     }
 }
 
 exports.deleteDepartment = async(req, res) => {
-    const ID = req.body.id;
     try{
-        const deleteDepartment = await db.department.destroy({where:{ dept_id:ID}});
-        res.status(200).send({message: "Department deleted succesfully."})
+        const deleteDepartment = await db.department.destroy({ where: { dept_id: req.body.ID } });
+        res.status(200).send({message: "Department deleted successfully."})
     } catch(err){
         console.log(err);
-        res.status(500).send({message: "Unable to delete department."});
+        res.status(401).send("Unable to delete department.");
     }
 }
 
@@ -224,16 +216,14 @@ exports.getAllUnits = async(req, res) =>{
         res.status(200).send({result:data})
     } catch(err){
         console.log(err);
-        res.status(500).send({message: "Unable to retrieve units."});
+        res.status(401).send("Unable to retrieve units.");
     }
  }
 exports.addUnit = async(req, res) => {
     try{
         const { name, head, assistant, department } = req.body;
         if (!name || !head || !department) {
-            res.status(400).send({
-              message: "Kindly make sure the Name, Head and Department fields are not empty.",
-            });
+            res.status(401).send("Kindly make sure the Name, Head and Department fields are not empty.");
             return;
         }
 
@@ -257,7 +247,7 @@ exports.addUnit = async(req, res) => {
 
     } catch(err){
         console.log(err);
-        res.status(500).send({ message: "Server error, unable to add the unit to the database. Kindly try again later."});
+        res.status(401).send({ message: "Server error, unable to add the unit to the database. Kindly try again later."});
     }
 }
 
@@ -265,9 +255,7 @@ exports.updateUnit = async(req, res) => {
     try{
         const { id, name, head, assistant, department } = req.body;
         if (!name || !head || !department) {
-            res.status(400).send({
-              message: "Kindly make sure the Name, Head and Department fields are not empty.",
-            });
+            res.status(401).send("Kindly make sure the Name, Head and Department fields are not empty.");
             return;
         }
 
@@ -290,37 +278,25 @@ exports.updateUnit = async(req, res) => {
                where: {unit_id: id},
             }
         );
-        res.status(200).send({message: "Unit updated succesfully."}) 
+        res.status(200).send({message: "Unit updated successfully."}) 
 
     } catch(err){
         console.log(err);
-        res.status(500).send({message: "Unable to update unit."});
+        res.status(401).send("Unable to update unit.");
     }
 }
 
 exports.deleteUnit = async(req, res) => {
-     const ID = req.body.id;
     try{
-        const deleteUnit = await db.unit.destroy({where:{ unit_id:ID}});
-        res.status(200).send({message: "Unit deleted succesfully."})
+        const deleteUnit = await db.unit.destroy({ where: { unit_id: req.body.ID } });
+        res.status(200).send({message: "Unit deleted successfully."})
     } catch(err){
         console.log(err);
-        res.status(500).send({message: "Unable to delete Unit."});
+        res.status(401).send("Unable to delete Unit.");
     } 
 }
 
-/* async function getAssistantId(name){
-    console.log("name: "+ name);
-    if (name === '' || name === undefined || name === '  '){
-        return null;
-    }
 
-    const assistID = await db.sequelize.query(`SELECT member_id FROM members WHERE CONCAT(firstname,' ',middlename, ' ',lastname) = '${name}'`, {
-        type:QueryTypes.SELECT});
-        console.log(assistID);
-
-   return assistID[0].member_id;
-} */
 
 
 
