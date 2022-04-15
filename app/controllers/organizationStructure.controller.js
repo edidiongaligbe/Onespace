@@ -19,7 +19,7 @@ exports.getAllMinistries = async(req, res) =>{
         console.log(err);
         res.status(401).send({message: "Unable to retrieve ministries."});
     }
- }
+ };
 
 exports.addMinistry = async(req, res) => {
     try{
@@ -47,7 +47,7 @@ exports.addMinistry = async(req, res) => {
         res.status(401).send("Unable to add new ministry to the database.");
     }
 
-}
+};
 
 exports.updateMinistry = async(req, res) => {
     try{
@@ -78,7 +78,7 @@ exports.updateMinistry = async(req, res) => {
         console.log(err);
         res.status(401).send({message: "Unable to update ministry."});
     }
-}
+};
 
 exports.deleteMinistry = async(req, res) => {
     try{
@@ -88,7 +88,7 @@ exports.deleteMinistry = async(req, res) => {
         console.log(err);
         res.status(401).send("Unable to delete ministry.");
     }
-}
+};
 
 
 

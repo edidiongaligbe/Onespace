@@ -1,13 +1,15 @@
-
-
 module.exports = (sequelize, Sequelize) =>{
-    const HouseFellowshipNewMember = sequelize.define("house_fellowship_new_member", {
-        testimony_id:{
+    const HouseFellowshipVisitor = sequelize.define("house_fellowship_visitor", {
+        visitor_id:{
           type: Sequelize.UUID,
           allowNull: false,
           primaryKey: true,
           defaultValue: Sequelize.UUIDV4,
-        }, 
+        },
+        name: {
+            type: Sequelize.STRING(125),
+            allowNull: true,
+        },
         phone: {
             type: Sequelize.STRING(125),
             allowNull: true,
@@ -16,6 +18,10 @@ module.exports = (sequelize, Sequelize) =>{
             type: Sequelize.STRING(250),
             allowNull: true,
         },
+        reportDate: {
+            type: Sequelize.STRING(125),
+            allowNull: true,
+        }, 
     });
-    return HouseFellowshipNewMember;
+    return HouseFellowshipVisitor;
 }

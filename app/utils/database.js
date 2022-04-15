@@ -37,7 +37,7 @@ db.house_fellowship_center = require('../models/house_fellowship_center.model.js
 db.house_fellowship_meeting_report = require('../models/house_fellowship_meeting_report.model.js')(sequelize, Sequelize);
 db.house_fellowship_new_member = require('../models/house_fellowship_new_member.model.js')(sequelize, Sequelize);
 db.house_fellowship_new_convert = require('../models/house_fellowship_new_convert.model.js')(sequelize, Sequelize);
-db.house_fellowship_new_member = require('../models/house_fellowship_new_member.model.js')(sequelize, Sequelize);
+db.house_fellowship_visitor = require('../models/house_fellowship_visitor.model.js')(sequelize, Sequelize);
 db.country = require('../models/country.model.js')(sequelize, Sequelize);
 db.christianQuotes = require('../models/christianQuotes.model.js')(sequelize, Sequelize);
 db.attendance = require('../models/attendance.model.js')(sequelize, Sequelize);
@@ -115,7 +115,7 @@ db.house_fellowship_new_member.belongsTo(db.house_fellowship_meeting_report, {fo
 db.house_fellowship_new_convert.belongsTo(db.house_fellowship_meeting_report, {foreignKey: 'meeting_id', targetKey: 'meeting_id'});
 
 //House Fellowship Meeting and New Convert relationship
-db.house_fellowship_new_member.belongsTo(db.house_fellowship_meeting_report, {foreignKey: 'meeting_id', targetKey: 'meeting_id'});
+db.house_fellowship_visitor.belongsTo(db.house_fellowship_meeting_report, {foreignKey: 'meeting_id', targetKey: 'meeting_id'});
 
 /* //Member and Ministry relationship
 db.assignedRoles.belongsTo(db.role, {foreignKey: 'role_id', targetKey: 'role_id'}) */

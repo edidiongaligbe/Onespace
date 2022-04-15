@@ -13,6 +13,19 @@ exports.getMemberID = async(name) => {
    return member[0].member_id;
 }
 
+exports.getID = async(customQuery, IdField) => {
+    try{
+        const result = await db.sequelize.query(customQuery, {
+        type:QueryTypes.SELECT});
+
+        return result[0][IdField];
+    } catch(err){
+        console.log(err);
+        return null;
+    }
+   
+}
+
 exports.generateRandomChars = (charLen) => {
     const characters ='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 

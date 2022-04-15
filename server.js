@@ -23,11 +23,11 @@ db.sequelize.sync().then(() => {
   dbinit.bulkInsertChristianQuotes();
 });
 
-require("./app/routes/indexroutes")(app);
-require("./app/routes/accessroutes")(app);
-require("./app/routes/memberroutes")(app);
-require("./app/routes/organizationStructureroutes")(app);
-
+require("./app/routes/index_routes")(app);
+require("./app/routes/access_routes")(app);
+require("./app/routes/member_routes")(app);
+require("./app/routes/organization_structure_routes")(app);
+require("./app/routes/house_fellowship_routes")(app);
 
 
 
